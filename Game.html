@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>My Website</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  </head>
-  <div class="nav-wrapper">
-    <a href="index.php">HOME</a>
-  </div>
-  <body>
-    <main>
-        <h1>Welcome to My Website</h1>  
-    </main>
-	<script src="index.js"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Game</title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    </head>
+    <div class="nav-wrapper">
+        <a href="index.php">HOME</a>
+    </div>
+    <body>
+        <div class="board">
+            <svg xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            width="75vw" height="75vh">
+                <image href="assets/SVG/battleshipBoard.svg" width="75vw" height="75vh" id="boardSvg" />
+                <image href="assets/SVG/CV.svg" width="37.5vw" height="7.5vh" id="CV" />
+            </svg>
+        </div>
+        <script src="index.js"></script>
+    </body>
 </html>
