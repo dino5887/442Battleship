@@ -2,6 +2,17 @@ body{
     margin:0;
 }
 
+.board{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-top:20px;
+}
+
+
+
+
+
 .footer-wrapper {
     background-image: url("../assets/spaceBG.webp");
     width:100%;
