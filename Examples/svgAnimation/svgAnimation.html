@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8' />
+  <title>Web Animations</title>
+  <style rel="stylesheet">
+    svg { width: 100vw; height: 99vh; }
+    #triangle{
+      animation: bozo 3s linear infinite;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+    }
+    @keyframes bozo{
+      0%  { transform: rotate(360deg) }
+      100% {transform: rotate(0deg) }
+    }
+    #ellipse{
+      fill: #bf00ff;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+    }
+    #rect1{
+      fill:#800080;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+    }
+    #rect2{
+
+      fill:#4b0082;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+    }
+
+  </style>
+</head>
+<body>
+    <svg xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    width="100%" height="100%">
+
+    <rect x="16vw" y="6vw" width="450" height="450" id="rect2"></rect>
+
+    <rect x="19vw" y="9vw" width="350" height="350" id="rect1"></rect>
+
+    <ellipse cx="30vw" cy="20vw" rx="165" ry="85" id="ellipse">
+      <animateTransform attributeName="transform" type="rotate" begin="0s" from="0 0 0" to="360 0 0" dur="1s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <defs>
+      <path id="triangle"
+        d="M 0 -60 L -60 60 L 60 60 z"
+        fill="#dda0dd "/>
+    </defs>
+    <use x="30vw" y="20vw" xlink:href="#triangle"/>
+
+    <g id="container"></g>
+
+  </svg>
+  <script>
+    const svgns = `http://www.w3.org/2000/svg`;
+    function makeCircle() {
+    const circle = document.createElementNS(svgns, `circle`);
+    circle.setAttributeNS(null, `r`, '20px');
+    circle.setAttributeNS(null, `cx`, `30vw` );
+    circle.setAttributeNS(null, `cy`, `20vw` );
+    document.getElementById(`container`).appendChild(circle);
+    circle.setAttributeNS(null, `fill`, `#e6e6fa`);
+    }
+
+    makeCircle();
+
+    const rect1 = document.querySelector('#rect1')
+    .animate([
+      {opacity:"1.0", transform: "rotate(0deg)"},
+      {opacity:"1.0", transform: "rotate(360deg)"}
+    ],{
+      delay: 0,
+      direction: "reverse",
+      duration: 2000,
+      iterations: Infinity,
+    });
+
+    const rect2 = document.getElementById(`rect2`);
+
+    var id = null;
+    function myMove() {
+      var pos = 0;
+      clearInterval(id);
+      id = setInterval(frame, 15);
+      function frame() {
+        if (pos == 360) {
+          //console.log("ending!");
+          clearInterval(id);
+          id=null;
+          pos=0;
+          myMove();
+        } else {
+          pos+=2;
+          //console.log('rotate(' + pos + 'deg)');
+          rect2.style.transform = 'rotate(' + pos + 'deg)';
+        }
+      }
+    }
+    myMove();
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Secure Web App Dev</title>
+  
+  <!-- experiment with using different themes -->
+  <link rel="stylesheet" href="tablesorter/dist/css/theme.default.min.css" />
+  <link rel="stylesheet" href="tablesorter/dist/css/theme.blue.css" />
+  <link rel="stylesheet" href="tablesorter/dist/css/theme.blackice.min.css" />
+  <link rel="stylesheet" href="tablesorter/dist/css/theme.ice.min.css" />
+  <link rel="stylesheet" href="jquery-ui/jquery-ui.min.css">
+  
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="tablesorter/dist/js/jquery.tablesorter.js"></script>
+  <script src="jquery-ui/jquery-ui.min.js"></script>
+
+<script>
+  /*
+    Degrees
+      * http://ist.rit.edu/api/degrees/
+      * Get list of undergrad and graduate degrees
+    
+    Courses
+      * http://ist.rit.edu/api/courses/
+      * http://ist.rit.edu/api/courses/degreeName=BSWMC
+      * Get list of courses, per degree
+      
+    Course Detail
+      * http://ist.rit.edu/api/course/courseID=ISTE-442
+      * Get details of a course
+      
+  */
+  
+  //const url = "http://ist.rit.edu/api/";  // doesn't include 'Access-Control-Allow-Origin' header
+  const url = "https://people.rit.edu/~dmgics/istSiteApi/proxy.php";
+  
+  
+  $( document ).ready( function() {
+    getDegrees();
+  });
+  
+  // When the page loads, get the list of available degrees
+  function getDegrees() {
+    // Use jQuery's ajax() method to retrieve the list of degrees
+    
+    // When using the proxy, `data` will be populated like this:
+    // data: { path: "/degrees" }
+    
+    // Use forEach() to iterate over the collection of degrees returned form the API
+    
+  }
+  
+  // When clicking the 'Show Results' button, get the list of courses for each degree
+  function search() {
+    
+    console.log( $( "#search-form").serialize() );
+        
+    // Use jQuery's ajax() method to retrieve the list of courses per degree
+    
+    // Build an HTML table with the results, with columns for:
+    //    1) Degree Name
+    //    2) Semester
+    //    3) Courses (list of IDs)
+    // Add the table to the #table-output div
+    
+    // Only display each course once. I.e., the list should contain only distinct courses
+    // Hint:
+    /*
+      const courses = degree.courses.sort().filter( function( value, index, self ) { // get unique values
+                        return self.indexOf( value ) === index;
+                      } );
+    */
+    
+    // Call the tablesorter plugin so the table is formatted and sortable
+    // Don't allow the "Courses" column to be sorted
+    
+    // Make each course ID clickable so that clicking calls getCourseInfo() for that course
+ 
+  }
+  
+  // When a course ID is clicked, display a modal with info for that course
+  function getCourseInfo( courseId ){
+    
+    // Use jQuery's ajax() method to retrieve the course information
+    
+    // Use jQuery UI (or a different library, if you prefer) to display a modal with the course info 
+    //    (ID, title, and description)
+    // Hint: Use the #course-info-container div
+  }
+</script>
+</head>
+<body>
+  <h2>IST Site API</h2>
+  Course ID:
+  <form>
+    <input type="text" id="course-id" placeholder="ISTE-442" value="ISTE-442" />
+    <input type="button" value="Get Course Info" onclick="getCourseInfo( $( '#course-id').val() );" />
+  </form>
+  <div id="course-info-container" style="display:none;"></div>
+  <hr>
+  <form id="search-form">
+    <fieldset>
+      <legend>Search Criteria</legend>
+      <p>Degrees <select id="degrees" name="degreeName"></select></p>
+      
+      <div style="margin:0 0 0 10em">
+        <input value="Show Results" onclick="search()" id="btnSearch" class="button" type="button"> <input type="reset" class="button" value="Reset Form" onclick="">
+      </div>
+    </fieldset>
+  </form>
+  <div id="table-output"></div>
+</body>
+</html>

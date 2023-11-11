@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Prototype</title>
+  <!--
+    images from:
+	  https://encylia.com/wp-content/uploads/2015/01/ghost-156656_640.png
+	  http://images.clipartpanda.com/happy-jack-o-lantern-clipart-bcyE6LAzi.jpeg
+    https://fsb.zobj.net/crop.php?r=-kzh-IEWgl4F1_qyPwo8N3LTmpOssS91bRHBy7D5QCCC02a4Y-9uttqqtPQyMPV_vgGEDPfGxLzf1J_BVY8FSooD4nkHpqeBMKe6mM1ddZOV-dGgbuIFimcmWTzRsIaLT8aWdoZqhWV6vSvc
+    https://media.musclegrid.io/pedrosjudo.com/uploads/2019/07/29174241/0-5949_free-turkey-clipart-image-clipart-free-clipart-image-800x534.png
+  -->
+  
+</head>
+<body>
+<script>
+// only expose single variable (`APP`) to global namespace, via immediately invoked function expression "module"
+const APP = ( function() {
+
+  const KEY_LEFT    = 74,   // j
+        KEY_UP      = 73,   // i
+        KEY_RIGHT   = 76,   // l
+        KEY_DOWN    = 75,   // k
+        KEY_A       = 65,   // a
+        NUM_SPRITES = 10,
+        arr         = [];   //Will be used to hold all of the instances we make
+  let   lastKey     = 0,
+        fighter,
+        win_width,
+        ticker_handle;
+  
+  /**
+   * Initialize the app
+   *    - create the sprites and fighter
+   *    - add a key event listener
+   *    - start the frame rate
+   */
+  function init(){
+    getDimensions();
+  
+    
+    // watch keys
+    document.onkeypress = keyDownEventHandler;
+    
+    // start the frame rate
+    startTicker();
+  }
+  
+  
+  /**
+   * Get dimensions of the viewport (for bouncing sprites back and forth)
+   */
+  function getDimensions() {
+    win_width = window.innerWidth - 50;
+  }
+    
+  
+  /**
+   * Constructor function for building sprites
+   */
+  
+  
+
+  /**
+   * Constructor function for building fighters, which inherit from sprites
+   */
+  
+  
+  
+  //////////////////////////////////////////////////////////////////////
+  // Build a frame rate clock...
+  
+  /**
+   * Start the frame rate
+   */
+  function startTicker(){
+    ticker_handle = setTimeout( ticker, 20 );
+  }
+
+  /**
+   * Stop the frame rate
+   */
+  function stopTicker() {
+      clearTimeout( ticker_handle );
+  }
+  
+  /**
+   * Construct the frame rate
+   */
+  function ticker(){
+    processKey();
+    
+    // move each sprite
+    for ( let i = 0; i < NUM_SPRITES; i++ ) {
+      if ( arr[i] ) {
+        arr[i].move();
+      }
+    }
+  
+    setTimeout( ticker, 20 );
+  }
+  
+  
+  
+  ///////////////////////////////////////////////////////////////////////
+  // Keyboard stuff
+  
+  /**
+   * Handle keyboard events
+   */
+  function keyDownEventHandler( e ) {
+    var key = 0;
+    // subtract 32 for onkeypress instead of onkeyup
+    key = parseInt( e.keyCode ) - 32;
+    lastKey = key;
+  }
+  
+  /**
+   * Processes the key that was pressed
+   * Called at the framerate
+   */
+  function processKey() {
+  	switch ( lastKey ) {
+  		case KEY_LEFT:
+  			fighter.moveLeft();
+  			break;
+  		case KEY_RIGHT:
+  			fighter.moveRight();
+  			break;
+  		case KEY_UP:
+  			fighter.moveUp();
+  			break;
+  		case KEY_DOWN:
+  			fighter.moveDown();
+  			break;
+      }
+  }
+  
+  // only publicly expose `init` and `getDimensions`
+  return {
+    init: init,
+    getDimensions: getDimensions
+  };
+})();
+
+APP.init();
+window.addEventListener( `resize`, APP.getDimensions );
+</script>
+</body>
+</html>

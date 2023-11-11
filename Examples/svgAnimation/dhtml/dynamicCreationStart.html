@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dynamic Creation is Cool</title>
+  <style rel="stylesheet">
+    * { margin: 0; padding: 0;}
+    svg { width: 100vw; height: 99vh; }
+    .target { fill: white; stroke: blue; stroke-width: 4; cy: 100px; r: 50px; }
+    #circle1 { cx: 100px; }
+    #circle2 { cx: 260px; }
+  </style>
+  <script>
+    const SVG_APP = (function () {
+    	const svgns = `http://www.w3.org/2000/svg`;
+
+      function $( id ) {
+        return document.getElementById( id );
+      }
+      
+      function $$( tag ) {
+        return document.getElementsByTagName( tag );
+      }
+      
+      function randomize( min, max ) {
+        max -= min;
+        return parseInt( Math.random() * max ) + min;
+      }
+
+      function makeCircle() {
+
+        const circle = document.createElementNS(svgns, `circle`);
+        circle.setAttributeNS(null, `r`, randomize(5,40) );
+        circle.setAttributeNS(null, `cx`, `${randomize(0,100)}vw` );
+        circle.setAttributeNS(null, `cy`, `${randomize(0,100)}vh` );
+        circle.setAttributeNS(null, `fill`, `rgb(${randomize(0,255)},
+        ${randomize(0,255)}, ${randomize(0,255)})`);
+        circle.setAttributeNS(null, `opacity`, parseInt(Math.random() * 100) / 100);
+
+        $(`container`).appendChild(circle);
+        
+      }
+      
+      function makeSquare() {
+        const square = document.createElementNS(svgns, `rect`);
+        square.setAttribute(`x`,0);
+        square.setAttribute(`y`,5);
+        square.setAttribute(`width`,40);
+        square.setAttribute(`height`,40);
+        square.setAttribute(`fill`,`orange`);
+        square.setAttribute(`opacity`,0.5);
+
+
+        const animation = document.createElementNS(svgns, `animate`);
+        animation.setAttribute(`dur`,`5s`);
+        animation.setAttribute(`attributeName`,`x`);
+        animation.setAttribute(`from`,0);
+        animation.setAttribute(`to`,`100vw`);
+        animation.setAttribute(`repeatCount`,`indefinite`);
+
+        const time = $$ (`svg`)[0].getCurrentTime();
+        animation.setAttribute(`begin`,`${time}s`);
+        square.appendChild(animation);
+        
+        $$(`svg`)[0].appendChild(square);
+        animation.beginElement();
+      }
+      
+      // Kill the last circle
+      function removeLast() {
+        const circs = $(`container`).getElementsByTagName(`circle`);
+        if(circs.length){
+        $(`container`).removeChild(circs[circs.length-1]);
+        }
+      }
+      
+      function init() {
+        $( `circle1` ).addEventListener( `mousemove`, makeCircle );
+        $( `circle2` ).addEventListener( `mousedown`, makeSquare );
+        $( `circle2` ).addEventListener( `mousedown`, removeLast );
+      }
+      
+      return {
+        makeCircle: makeCircle,
+        makeSquare: makeSquare,
+        init: init
+      };
+    }());
+    
+  </script>
+</head>
+<body>
+  <svg onload="SVG_APP.init();">
+    <g id="container"></g>
+    <circle id="circle1" class="target" />
+    <circle id="circle2" class="target" />
+  </svg>
+</body>
+</html>

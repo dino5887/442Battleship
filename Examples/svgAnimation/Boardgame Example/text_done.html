@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='utf-8' />
+	<title>SVG Text</title>
+	<link href='https://fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
+</head>
+<body>
+	<svg xmlns="http://www.w3.org/2000/svg"
+	     xmlns:xlink="http://www.w3.org/1999/xlink"
+	     width="100%" height="1000px">
+		<style>
+				.limerick  {
+					font-family: Chewy, Arial, sans-serif;
+					font-size: 25pt;
+					fill: DeepPink;
+					filter: url( #dropShadow );
+				}
+				.labels {
+				  font-size: 30pt;
+				}
+		</style>
+    <defs>
+        <path id="elem" d="M-6,29.5 Q33.5,10 35.5,34.5 Q44,14.5 -10,7.5 z"
+              stroke="rgb(0,100,0)" stroke-width="2" fill="rgb(0,128,0)"
+              fill-opacity="0.5"/>
+        <g id="cluster">
+            <use xlink:href="#elem" transform="rotate(0)"/>
+            <use xlink:href="#elem" transform="rotate(120)"/>
+            <use xlink:href="#elem" transform="rotate(240)"/>
+        </g>
+        <g id="supercluster">
+            <use xlink:href="#cluster"
+                 transform="rotate(60) translate(79.674,0)
+                            rotate(60) scale(-1,1)"/>
+            <use xlink:href="#cluster"
+                 transform="rotate(0) translate(79.674,0)"/>
+            <use xlink:href="#cluster"
+                 transform="rotate(-60) translate(79.674,0)
+                            scale(1,-1)"/>
+        </g>
+        <pattern id="tile" height="138" width="239.023"
+                 patternUnits="userSpaceOnUse" overflow="visible">
+            <use xlink:href="#supercluster"
+                 transform="translate(0,69)"/>
+            <use xlink:href="#supercluster"
+                 transform="translate(239,69) scale(-1,1)"/>
+        </pattern>
+        <filter id="dropShadow">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+            <feOffset dx="1" dy="2" />
+            <feMerge>
+                <feMergeNode in="offsetBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+        <!--we'll use this later-->
+        <path id="curve" d="M125,444C 300,400 400,600 650,350" />
+    </defs>
+    
+    <!-- elem -->
+    <text class="labels" x="150px" y="50px">elem</text>
+    <use xlink:href="#elem" x="170px" y="80px" />
+      
+    <!-- cluster -->
+    <text class="labels" x="400px" y="50px">cluster</text>
+    <use xlink:href="#cluster" x="455px" y="120px" />
+      
+    <!-- supercluster -->
+    <text class="labels" x="650px" y="50px">supercluster</text>
+    <use xlink:href="#supercluster" x="690px" y="180px" />
+    
+    <g>
+        <desc>The tiled background</desc>
+        <rect x="50" y="0" height="100%" width="100%" fill="url(#tile)"
+          opacity=".3" />
+        <rect x="0" y="0" height="100%" width="1in" fill="rgb( 128,192,128 )" />
+        <rect x="0" y="0" height="100%" width="1in" fill="url(#tile)" />
+    </g>
+    
+    <text class="limerick">
+    	<tspan x="125px" y="240px">I sat with the duchess at tea</tspan>
+    	<tspan x="125px" dy="1.5em">It was just as I feared it would be</tspan>
+    	<tspan x="125px" dy="1.5em">A rumbling abdominal</tspan>
+    	<tspan x="125px" dy="1.5em">Was simply phenomenal</tspan>
+    </text>
+    
+    <!--<use xlink:href="#curve" stroke="black" stroke-width="1px" fill="none" />-->
+      
+    <text class="limerick">
+      <textPath xlink:href="#curve">
+        And everyone thought it was me!
+      </textPath>
+    </text>
+	</svg>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>No Prototype</title>
+	<script>
+  	let win_width;      // Distance to move
+  	const sprites = [];   // Direction for each item
+  	
+    //Get dimensions of the window
+    function dimensions() {
+      win_width = window.innerWidth - 50;
+    }
+  	
+  	function init(){
+  	  dimensions();
+  	  
+  		for ( let i = 1; i <= 10; i++ ) {
+  			const img = document.createElement('img');
+  			img.src = "pumpkin.png";
+  			img.id  = "sprite"+i;
+  			img.style.fontSize = "14px";
+  			img.style.position = "absolute";
+  			img.style.left     = 0;
+  			img.style.top      = i * 42 - 42 + "px";
+  			document.body.appendChild( img );
+  			
+  			moveIt( "move" + i, i );
+  			
+  			sprites[i] = i + 1;
+
+  		}
+  	}
+  
+    function moveIt( whichOne, id ){
+      const spriteEle = document.getElementById(`sprite${id}`);
+	  pos = parseInt(spriteEle.style.left);
+
+	  if((pos < win_width && sprites[id] > 0) ||
+	  (pos > 0 && sprites[id] < 0)){
+		spriteEle.style.left = `${pos + sprites[id]}px`;
+	  } else{
+		sprites[id] *= -1;
+	  }
+	  
+	  setTimeout( () => moveIt( whichOne,id ),20 );
+    }
+	</script>
+	
+</head>
+<body onload="init();" onresize="dimensions();">
+  
+</body>
+</html>
