@@ -46,3 +46,9 @@ body{
     padding-top:40px;
 }
 
+.gridNum{
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+

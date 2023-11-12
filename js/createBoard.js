@@ -15,43 +15,112 @@ function createBoard(){
     for ( let i = 0; i < 10; i++ ) {
         for ( let j = 0; j < 10; j++ ) {
     
-            // number of vh per square 7.5
+            // number of vh per square 5
             // distance in vh from edges of screen 50
-            x = 7.5 * i + 50;
-            y = 7.5 * j;
+            x = 5 * i + 20;
+            y = 5 * j;
     
-            color = `#39b8c9`;
+            //create grid letters
+            if(i == 0){
+                gridLetter = String.fromCharCode(j+65);
+                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                gridNum.setAttribute("x", `${x-5}vh`);
+                gridNum.setAttribute("y", `${y+4}vh`);
+                gridNum.setAttribute("font-size", "4vh");
+                gridNum.setAttribute("fill", "#231f20");
+                gridNum.setAttribute("class", "gridNum");
+                var textNode = document.createTextNode(gridLetter);
+                gridNum.appendChild(textNode);
+                boardZone.appendChild(gridNum);
+            }
+
+            //create grid numbers x2
+            if(j == 9){
+                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                gridNum.setAttribute("x", `${x}vh`);
+                gridNum.setAttribute("y", `${y+10}vh`);
+                gridNum.setAttribute("font-size", "4vh");
+                gridNum.setAttribute("fill", "#231f20");
+                gridNum.setAttribute("class", "gridNum");
+                var textNode = document.createTextNode(i+1);
+                gridNum.appendChild(textNode);
+                boardZone.appendChild(gridNum);
+
+                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                gridNum.setAttribute("x", `${x+55}vh`);
+                gridNum.setAttribute("y", `${y+10}vh`);
+                gridNum.setAttribute("font-size", "4vh");
+                gridNum.setAttribute("fill", "#231f20");
+                gridNum.setAttribute("class", "gridNum");
+                var textNode = document.createTextNode(i+1);
+                gridNum.appendChild(textNode);
+                boardZone.appendChild(gridNum);
+            }
+
+            //create Ocean and Target Grid Squares
+            var ocean = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            ocean.setAttribute("x", `${x}vh`);
+            ocean.setAttribute("y", `${y}vh`);
+            ocean.setAttribute("width", "5vh");
+            ocean.setAttribute("height", "5vh");
+            ocean.setAttribute("stroke-width", "2");
+            ocean.setAttribute("stroke", "#231f20");
+            ocean.setAttribute("fill", "#39b8c9");
+            ocean.setAttribute("id", `ocean_${i}${j}`);
+            boardZone.appendChild(ocean);
+
             var target = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            target.setAttribute("x", `${x}vh`);
+            target.setAttribute("x", `${x+55}vh`);
             target.setAttribute("y", `${y}vh`);
-            target.setAttribute("width", "7.5vh");
-            target.setAttribute("height", "7.5vh");
+            target.setAttribute("width", "5vh");
+            target.setAttribute("height", "5vh");
             target.setAttribute("stroke-width", "2");
             target.setAttribute("stroke", "#231f20");
-            target.setAttribute("fill", color);
+            target.setAttribute("fill", `#32CD32`);
             target.setAttribute("id", `target_${i}${j}`);
             boardZone.appendChild(target);
         }
     }
+
+    var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    gridNum.setAttribute("x", `${30}vh`);
+    gridNum.setAttribute("y", `${62}vh`);
+    gridNum.setAttribute("font-size", "6vh");
+    gridNum.setAttribute("fill", "#39b8c9");
+    gridNum.setAttribute("class", "gridNum");
+    var textNode = document.createTextNode("Ocean Grid");
+    gridNum.appendChild(textNode);
+    boardZone.appendChild(gridNum);
+
+    var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    gridNum.setAttribute("x", `${85}vh`);
+    gridNum.setAttribute("y", `${62}vh`);
+    gridNum.setAttribute("font-size", "6vh");
+    gridNum.setAttribute("fill", "#32CD32");
+    gridNum.setAttribute("class", "gridNum");
+    var textNode = document.createTextNode("Ocean Grid");
+    gridNum.appendChild(textNode);
+    boardZone.appendChild(gridNum);
+
 }
 
 function createShips(){
     var CV = document.createElementNS("http://www.w3.org/2000/svg", "image");
     CV.setAttribute("href", "assets/SVG/CV2.svg");
     CV.setAttribute("x", "2vh");
-    CV.setAttribute("y", "2vh");
-    CV.setAttribute("width", "36.75vh");
-    CV.setAttribute("height", "6.75vh");
+    CV.setAttribute("y", "70vh");
+    CV.setAttribute("width", "24.5vh");
+    CV.setAttribute("height", "4.5vh");
     CV.setAttribute("id", "CV");
     CV.setAttribute("onmousedown", "setMove('CV');");
     boardZone.appendChild(CV);
 
     var BB = document.createElementNS("http://www.w3.org/2000/svg", "image");
     BB.setAttribute("href", "assets/SVG/BB2.svg");
-    BB.setAttribute("x", "2vh");
-    BB.setAttribute("y", "10vh");
-    BB.setAttribute("width", "21.75vh");
-    BB.setAttribute("height", "6.75vh");
+    BB.setAttribute("x", "40vh");
+    BB.setAttribute("y", "70vh");
+    BB.setAttribute("width", "19.5vh");
+    BB.setAttribute("height", "4.5vh");
     BB.setAttribute("id", "BB");
     BB.setAttribute("onmousedown", "setMove('BB');");
     boardZone.appendChild(BB);
@@ -59,29 +128,29 @@ function createShips(){
     var CL = document.createElementNS("http://www.w3.org/2000/svg", "image");
     CL.setAttribute("href", "assets/SVG/CL2.svg");
     CL.setAttribute("x", "2vh");
-    CL.setAttribute("y", "20vh");
-    CL.setAttribute("width", "21.75vh");
-    CL.setAttribute("height", "6.75vh");
+    CL.setAttribute("y", "80vh");
+    CL.setAttribute("width", "14.5vh");
+    CL.setAttribute("height", "4.5vh");
     CL.setAttribute("id", "CL");
     CL.setAttribute("onmousedown", "setMove('CL');");
     boardZone.appendChild(CL);
 
     var SS = document.createElementNS("http://www.w3.org/2000/svg", "image");
     SS.setAttribute("href", "assets/SVG/SS2.svg");
-    SS.setAttribute("x", "2vh");
-    SS.setAttribute("y", "30vh");
-    SS.setAttribute("width", "21.75vh");
-    SS.setAttribute("height", "6.75vh");
+    SS.setAttribute("x", "20vh");
+    SS.setAttribute("y", "80vh");
+    SS.setAttribute("width", "14.5vh");
+    SS.setAttribute("height", "4.5vh");
     SS.setAttribute("id", "SS");
     SS.setAttribute("onmousedown", "setMove('SS');");
     boardZone.appendChild(SS);
 
     var DD = document.createElementNS("http://www.w3.org/2000/svg", "image");
     DD.setAttribute("href", "assets/SVG/DD2.svg");
-    DD.setAttribute("x", "2vh");
-    DD.setAttribute("y", "40vh");
-    DD.setAttribute("width", "21.75vh");
-    DD.setAttribute("height", "6.75vh");
+    DD.setAttribute("x", "40vh");
+    DD.setAttribute("y", "80vh");
+    DD.setAttribute("width", "9.5vh");
+    DD.setAttribute("height", "4.5vh");
     DD.setAttribute("id", "DD");
     DD.setAttribute("onmousedown", "setMove('DD');");
     boardZone.appendChild(DD);
@@ -207,13 +276,13 @@ function checkHit( x, y ) {
 
     for ( let i = 0; i < 10; i++ ) {
         for ( let j = 0; j < 10; j++ ) {
-        const drop = document.getElementById( `target_${i}${j}` ).getBBox();
+        const drop = document.getElementById( `ocean_${i}${j}` ).getBBox();
 
         //console.log( drop );
         if ( x > drop.x && x < ( drop.x + drop.width )
             && y > drop.y && y < ( drop.y + drop.height ) ) {
         
-                console.log(`target_${i}${j}`);
+                console.log(`ocean_${i}${j}`);
 
                 return true;
             }
