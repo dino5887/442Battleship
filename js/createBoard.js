@@ -9,12 +9,16 @@ var turn;
 
 var moverId = null;
 
-
+var shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
+var shipCodeLength = {"CV":5, "BB":4, "CL":3, "SS":3, "DD":2};
 
 function createBoard(){
     for ( let i = 0; i < 10; i++ ) {
         for ( let j = 0; j < 10; j++ ) {
-    
+
+            //Default the shipArray to noship, unexplored
+            shipArray[i][j] = "NSS, X";
+
             // number of vh per square 5
             // distance in vh from edges of screen 50
             x = 5 * i + 20;
@@ -232,7 +236,9 @@ createControlPanel();
 
 function init(evt){
     document.getElementsByTagName( `svg` )[0].addEventListener( `mousemove`, moveMouse );
+    document.getElementsByTagName( `svg` )[0].addEventListener( `mouseup`, releaseMouse );
 
+    document.getElementsByTagName( `svg` )[0].addEventListener( `mousemove`, moveMouse );
     document.getElementsByTagName( `svg` )[0].addEventListener( `mouseup`, releaseMouse );
 }
 
@@ -240,18 +246,36 @@ function setMove( id ) {
     moverId = id;
     myX = document.querySelector( `#${id}` ).getAttribute( `x` );
     myY = document.querySelector( `#${id}` ).getAttribute( `y` );
-    //console.log( myX, myY );
+    const moverEle = document.getElementById( moverId );
+    console.log( moverEle );
+    // moverEle.addEventListener("keydown", event =>{
+    //     console.log( evt );
+    //     if (event.key === "r") {
+            
+    //         moverEle.setAttribute( `transform`, `rotate(90deg)`);
+    //     }
+    // }, true);
+    console.log( myX, myY );
 }
 
 function moveMouse( evt ) {
     if ( moverId ) {
 
       const moverEle = document.getElementById( moverId );
+    
 
-      // move it!
       //console.log( evt );
       moverEle.setAttribute( `x`, evt.offsetX );
       moverEle.setAttribute( `y`, evt.offsetY );
+    }
+}
+
+function rotateSelected(evt){
+    
+    if ( moverId ) {
+    const moverEle = document.getElementById( moverId );
+
+    
     }
 }
 
@@ -259,7 +283,8 @@ function releaseMouse() {
     if ( moverId ) {
       const curX = parseInt( document.getElementById( moverId ).getAttribute( `x` ) ),
             curY = parseInt( document.getElementById( moverId ).getAttribute( `y` ) ),
-            hit = checkHit( curX, curY );
+            length = shipCodeLength[moverId];
+            hit = checkHit( curX, curY, length);
 
       // if not on the checker board
       if ( !hit ) {
@@ -272,23 +297,35 @@ function releaseMouse() {
     }
 }
 
-function checkHit( x, y ) {
+function checkHit( x, y, length) {
 
-    for ( let i = 0; i < 10; i++ ) {
-        for ( let j = 0; j < 10; j++ ) {
-        const drop = document.getElementById( `ocean_${i}${j}` ).getBBox();
-
+    for ( let tileX = 0; tileX < 10; tileX++ ) {
+        for ( let tileY = 0; tileY < 10; tileY++ ) {
+        const drop = document.getElementById( `ocean_${tileX}${tileY}` ).getBBox();
+        
         //console.log( drop );
         if ( x > drop.x && x < ( drop.x + drop.width )
             && y > drop.y && y < ( drop.y + drop.height ) ) {
         
-                console.log(`ocean_${i}${j}`);
+                console.log(`ocean_${tileX}${tileY}`);
+                //Check if ship colides with another ship
+                for ( let len = 0; len < length; len++ ) {
+                    if (shipArray[tileX+len][tileY] != "NSS, X"){
+                        document.getElementById(`errorText`).textContent = "Cannot Place Ships on Top of Each Other!";
+                        //console.log("Cannot Place Ships on Top of Each Other!");
+                        return false;
+                    }
+                }
+
+                //Add this ship to JSON
+                for ( let len = 0; len < length; len++ ) {
+                    shipArray[tileX+len][tileY] = `${moverId}${len}, X`;
+                }
 
                 return true;
             }
         }
     }
-    document.getElementById( `errorText` ).textContent = "Cannot Place Ships Out of Bounds!";
-    //console.log("Cannot Place Ships Out of Bounds!");
+    document.getElementById(`errorText`).textContent = "Cannot Place Ships Out of Bounds!";
     return false;
 }
