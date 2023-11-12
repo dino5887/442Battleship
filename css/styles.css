@@ -2,37 +2,15 @@ body{
     margin:0;
 }
 
-.board{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    margin-top:20px;
-}
 
 
 
-
-
-
-.footer-wrapper {
-    background-image: url("../assets/spaceBG.webp");
-    width:100%;
-    display: flex;
-    align-items: center;
-    padding-top:12px;
-    padding-bottom:13px;
-    border-top:#F4E36E solid 3px;
-    border-bottom:#F4E36E solid 3px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color:#F4E36E;
-}
-
+/* Global Nav Styles */
 .nav-wrapper {
     background-image: url("../assets/wave.jpg");
     background-repeat: no-repeat;
     background-size:cover;
     background-position: bottom;
-    /* position:fixed; */
     width:100%;
     display: flex;
     align-items: center;
@@ -50,99 +28,21 @@ body{
 }
 
 
-
-
-.hero-content *{
-    margin-bottom:40px;
-    margin-right:40px;
+/* Game Styles */
+.board{
+    display:flex;
+    flex-direction:row;
+    margin-top:20px;
 }
 
-
-
-h1{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color:#F4E36E;
-    font-size: 50px;
-}
-
-h2{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color:#F4E36E;
-    font-size: 40px;
-}
-
-
-.content-split-image-right{
-    background-position: center;
-    background-image: url("../assets/miltarypogFlip.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.linkGrid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 100px;
-}
-
-.linkChild1{
-    max-width:150px;
-    flex-direction:column;
-}
-
-.linkChild1 *{
-    max-width:150px;
-    margin-top:20px
-}
-
-.linkChild2{
-    max-width:150px;
-    flex-direction:column;
-}
-
-.linkChild2 *{
-    max-width:150px;
-    margin-top:20px
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.content-split-left{
-    background-position: center;
-    background-image: url("../assets/fullpog.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    margin:100px;
-}
-
-
-.content-split-right{
-    margin-top:100px;
+#controlPanel{
+    background-color: #848482;
+    border-radius:50px;
+    max-height:70vh;
+    min-width:20vw;
     display:flex;
     flex-direction:column;
-    align-items: center;
+    align-items:center;
+    padding-top:40px;
 }
 
-.content-split-right h1{
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    color:#F4E36E;
-    font-size: 50px;
-}
