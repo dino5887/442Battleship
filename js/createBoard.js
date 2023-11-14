@@ -11,6 +11,7 @@ var moverId = null;
 
 var shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
 var shipCodeLength = {"CV":5, "BB":4, "CL":3, "SS":3, "DD":2};
+var shipCodes = ["CV","BB","CL","SS","DD"];
 
 function createBoard(){
     for ( let i = 0; i < 10; i++ ) {
@@ -102,7 +103,7 @@ function createBoard(){
     gridNum.setAttribute("font-size", "6vh");
     gridNum.setAttribute("fill", "#32CD32");
     gridNum.setAttribute("class", "gridNum");
-    var textNode = document.createTextNode("Ocean Grid");
+    var textNode = document.createTextNode("Target Grid");
     gridNum.appendChild(textNode);
     boardZone.appendChild(gridNum);
 
@@ -283,11 +284,15 @@ function releaseMouse() {
     if ( moverId ) {
       const curX = parseInt( document.getElementById( moverId ).getAttribute( `x` ) ),
             curY = parseInt( document.getElementById( moverId ).getAttribute( `y` ) ),
-            length = shipCodeLength[moverId];
-            hit = checkHit( curX, curY, length);
+            ship = document.getElementById( moverId )
+            hit = checkHit( curX, curY);
+            collision  = checkShipCollision(moverId);
+
+            //length = shipCodeLength[moverId];
+            //hit = checkHit( curX, curY, length);
 
       // if not on the checker board
-      if ( !hit ) {
+      if ( !hit && !collision ) {
         const moverEle = document.getElementById( moverId );
         moverEle.setAttribute( `x`, myX );
         moverEle.setAttribute( `y`, myY );
@@ -297,27 +302,45 @@ function releaseMouse() {
     }
 }
 
-function checkHit( x, y, length) {
+function checkShipCollision(shipCode){
+    placedShip = document.getElementById('CV').getBBox;
+    shipCodes.forEach((drop) =>{
+        if(drop != shipCode){
+            drop = document.getElementById(drop).getBBox();
+            console.log("Ship BBox: " + placedShip.toString());
+            console.log("Drop BBox: " + drop.toString());
+
+            if ( placedShip.x > drop.x && x < ( drop.x + drop.width )
+            && y > drop.y && y < ( drop.y + drop.height ) ) {
+                false;
+            }
+        }
+    });
+}
+
+function checkHit( x, y) {
 
     for ( let tileX = 0; tileX < 10; tileX++ ) {
         for ( let tileY = 0; tileY < 10; tileY++ ) {
         const drop = document.getElementById( `ocean_${tileX}${tileY}` ).getBBox();
         
-        //console.log( drop );
+        console.log( drop );
         if ( x > drop.x && x < ( drop.x + drop.width )
             && y > drop.y && y < ( drop.y + drop.height ) ) {
         
                 console.log(`ocean_${tileX}${tileY}`);
                 //Check if ship colides with another ship
-                for ( let len = 0; len < length; len++ ) {
-                    if (shipArray[tileX+len][tileY] != "NSS, X"){
-                        document.getElementById(`errorText`).textContent = "Cannot Place Ships on Top of Each Other!";
-                        //console.log("Cannot Place Ships on Top of Each Other!");
-                        return false;
-                    }
-                }
+                // for ( let len = 0; len < length; len++ ) {
+                //     if (shipArray[tileX+len][tileY] != "NSS, X"){
+                //         document.getElementById(`errorText`).textContent = "Cannot Place Ships on Top of Each Other!";
+                //         console.log(shipArray);
+                //         //console.log("Cannot Place Ships on Top of Each Other!");
+                //         return false;
+                //     }
+                // }
 
                 //Add this ship to JSON
+                //Needs to be moved to prevent repeat adds
                 for ( let len = 0; len < length; len++ ) {
                     shipArray[tileX+len][tileY] = `${moverId}${len}, X`;
                 }
