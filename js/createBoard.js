@@ -1,17 +1,16 @@
+//Need to add rotation to ships!
+
 var moverId = null;
 
 var shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
-var shipCodeLength = {"CV":5, "BB":4, "CL":3, "SS":3, "DD":2};
-var shipCodes = ["CV","BB","CL","SS","DD"];
+
 var boardZone = document.getElementById("boardZone");
-
-
-
+export function createStartingBoard(){
 createGrid();
 createShips();
 attachEvents();
 createControlPanel();
-
+}
 
 function createGrid(){
     for ( let i = 0; i < 10; i++ ) {
@@ -178,6 +177,7 @@ function createControlPanel(){
     
     var endTurnButton = document.createElement("button");
     endTurnButton.setAttribute("id", "endTurnButton");
+    endTurnButton.setAttribute("onclick", "logShips();");
     var textNode = document.createTextNode("End Turn");
     endTurnButton.appendChild(textNode);
     controlPanel.appendChild(endTurnButton);
@@ -257,7 +257,7 @@ function rotateSelected(evt){
 
 function releaseMouse() {
     if ( moverId ) {
-        var onBoard = checkOnBoard();
+        var onBoard = checkOnBoard(moverId);
         var noCollide  = checkShipCollision(moverId);
         if(!onBoard){
             document.getElementById(`errorText`).textContent = "Cannot Place Ships Out of Bounds!";
@@ -297,12 +297,12 @@ function checkShipCollision(){
     return true;
 }
 
-function checkOnBoard() {
+function checkOnBoard(shipID) {
         //check if the ship is out of bounds
 
         topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
         bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
-        ship = document.getElementById( moverId ).getBBox();
+        ship = document.getElementById(shipID).getBBox();
         //topLeft is the most top and left the ship can ever be
         //bottom right is the most bottom and right the ship can ever be
 
@@ -319,12 +319,44 @@ function checkOnBoard() {
 
 }
 
-function logShips(){
+function logShips() {
+    for(var i = 0; i < shipCodes.length; i++){
+        ship = shipCodes[i];
+        ship = document.getElementById(ship).getBBox();
+        shiplength = shipCodeLength[shipCodes[i]];
+        if(!checkOnBoard(shipCodes[i])){
+            //check if all ships are on the board, if not, return false and reset shipArray 
+            shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
+            document.getElementById(`errorText`).textContent = "Must place all Ships on the Board!";
+            return false;
+        }
 
-    for(ship in shipArray){
-        
-        length = shipCodeLength[ship];
+        for ( let tileX = 0; tileX < 10; tileX++ ) {
+            for ( let tileY = 0; tileY < 10; tileY++ ) {
+            const drop = document.getElementById( `ocean_${tileX}${tileY}` ).getBBox();
+            
+            //console.log( drop );
+            if ( ship.x > drop.x && ship.x < ( drop.x + drop.width )
+                && ship.y > drop.y && ship.y < ( drop.y + drop.height ) ) {
+            
+                    //console.log(`ocean_${tileX}${tileY}`);
+
+                    //Add this ship to JSON
+                    //console.log(shiplength);
+                    for ( let len = 0; len < shiplength; len++ ) {
+                        //console.log("Tile x:" + tileX);
+                        //console.log("Tile y:" + tileY);
+                        shipArray[tileX+len][tileY] = `${shipCodes[i]}${len}, X`;
+                    }
+                }
+            }
+        }
 
     }
+    //console.log(shipArray);
+    finishBoard();
+    return true;
 }
+
+
 
