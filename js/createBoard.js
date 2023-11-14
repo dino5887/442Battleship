@@ -1,19 +1,19 @@
-//Fields from API
-
-var gameState = 0;
-//0 = game prep, place stuff
-//1 = game started
-//2 = game over
-var turn;
-
-
 var moverId = null;
 
 var shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
 var shipCodeLength = {"CV":5, "BB":4, "CL":3, "SS":3, "DD":2};
 var shipCodes = ["CV","BB","CL","SS","DD"];
+var boardZone = document.getElementById("boardZone");
 
-function createBoard(){
+
+
+createGrid();
+createShips();
+attachEvents();
+createControlPanel();
+
+
+function createGrid(){
     for ( let i = 0; i < 10; i++ ) {
         for ( let j = 0; j < 10; j++ ) {
 
@@ -210,32 +210,7 @@ function createControlPanel(){
     controlPanel.appendChild(errorPanel);
 }
 
-
-if (gameState == 0) {
-    //Create empty board for player to place ships on
-
-var boardZone = document.getElementById("boardZone");
-
-
-createBoard();
-
-createShips();
-
-init();
-
-createControlPanel();
-
-} else if (gameState == 1) {
-    //Create active board from JSON data
-    console.log("Game is active");
-} else{
-    //Create active board from JSON data
-    console.log("Game is over");
-}
-
-
-
-function init(evt){
+function attachEvents(evt){
     document.getElementsByTagName( `svg` )[0].addEventListener( `mousemove`, moveMouse );
     document.getElementsByTagName( `svg` )[0].addEventListener( `mouseup`, releaseMouse );
 
@@ -248,7 +223,7 @@ function setMove( id ) {
     myX = document.querySelector( `#${id}` ).getAttribute( `x` );
     myY = document.querySelector( `#${id}` ).getAttribute( `y` );
     const moverEle = document.getElementById( moverId );
-    console.log( moverEle );
+    //console.log( moverEle );
     // moverEle.addEventListener("keydown", event =>{
     //     console.log( evt );
     //     if (event.key === "r") {
@@ -256,7 +231,7 @@ function setMove( id ) {
     //         moverEle.setAttribute( `transform`, `rotate(90deg)`);
     //     }
     // }, true);
-    console.log( myX, myY );
+    //console.log( myX, myY );
 }
 
 function moveMouse( evt ) {
@@ -282,73 +257,74 @@ function rotateSelected(evt){
 
 function releaseMouse() {
     if ( moverId ) {
-      const curX = parseInt( document.getElementById( moverId ).getAttribute( `x` ) ),
-            curY = parseInt( document.getElementById( moverId ).getAttribute( `y` ) ),
-            ship = document.getElementById( moverId )
-            hit = checkHit( curX, curY);
-            collision  = checkShipCollision(moverId);
-
-            //length = shipCodeLength[moverId];
-            //hit = checkHit( curX, curY, length);
-
-      // if not on the checker board
-      if ( !hit && !collision ) {
-        const moverEle = document.getElementById( moverId );
-        moverEle.setAttribute( `x`, myX );
-        moverEle.setAttribute( `y`, myY );
-      }
-
-      moverId = undefined;
+        var onBoard = checkOnBoard();
+        var noCollide  = checkShipCollision(moverId);
+        if(!onBoard){
+            document.getElementById(`errorText`).textContent = "Cannot Place Ships Out of Bounds!";
+            const moverEle = document.getElementById( moverId );
+            moverEle.setAttribute( `x`, myX );
+            moverEle.setAttribute( `y`, myY );
+        }
+        else if(!noCollide){
+            document.getElementById(`errorText`).textContent = "Cannot Place Ships on Top of Each Other!";
+            const moverEle = document.getElementById( moverId );
+            moverEle.setAttribute( `x`, myX );
+            moverEle.setAttribute( `y`, myY );
+        }
+        moverId = undefined;
     }
 }
 
-function checkShipCollision(shipCode){
-    placedShip = document.getElementById('CV').getBBox;
-    shipCodes.forEach((drop) =>{
-        if(drop != shipCode){
-            drop = document.getElementById(drop).getBBox();
-            console.log("Ship BBox: " + placedShip.toString());
-            console.log("Drop BBox: " + drop.toString());
-
-            if ( placedShip.x > drop.x && x < ( drop.x + drop.width )
-            && y > drop.y && y < ( drop.y + drop.height ) ) {
-                false;
-            }
-        }
-    });
+function checkShipCollision(){
+    placedShip = document.getElementById(moverId).getBBox();
+    for(var i = 0; i < shipCodes.length; i++){
+        if(shipCodes[i] != moverId){
+        otherShip = shipCodes[i];
+            otherShip = document.getElementById(otherShip).getBBox();
+            if(!((placedShip.x + placedShip.width < otherShip.x 
+            //Is placed ship far enough left to not be covering?
+            || placedShip.x > otherShip.x + otherShip.width)
+            //Is placed ship far enough right to not be covering?
+            || (placedShip.y > otherShip.y + otherShip.height
+            //Is placed ship far enough down to not be covering?
+            || placedShip.y + placedShip.height < otherShip.y)
+            //Is placed ship far enough up to not be covering?
+            )){
+                return false;
+            }      
+        };
+    };
+    return true;
 }
 
-function checkHit( x, y) {
+function checkOnBoard() {
+        //check if the ship is out of bounds
 
-    for ( let tileX = 0; tileX < 10; tileX++ ) {
-        for ( let tileY = 0; tileY < 10; tileY++ ) {
-        const drop = document.getElementById( `ocean_${tileX}${tileY}` ).getBBox();
-        
-        console.log( drop );
-        if ( x > drop.x && x < ( drop.x + drop.width )
-            && y > drop.y && y < ( drop.y + drop.height ) ) {
-        
-                console.log(`ocean_${tileX}${tileY}`);
-                //Check if ship colides with another ship
-                // for ( let len = 0; len < length; len++ ) {
-                //     if (shipArray[tileX+len][tileY] != "NSS, X"){
-                //         document.getElementById(`errorText`).textContent = "Cannot Place Ships on Top of Each Other!";
-                //         console.log(shipArray);
-                //         //console.log("Cannot Place Ships on Top of Each Other!");
-                //         return false;
-                //     }
-                // }
+        topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
+        bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
+        ship = document.getElementById( moverId ).getBBox();
+        //topLeft is the most top and left the ship can ever be
+        //bottom right is the most bottom and right the ship can ever be
 
-                //Add this ship to JSON
-                //Needs to be moved to prevent repeat adds
-                for ( let len = 0; len < length; len++ ) {
-                    shipArray[tileX+len][tileY] = `${moverId}${len}, X`;
-                }
-
-                return true;
+        //Check if the ship is further than these bounds
+        if ( ship.x < topLeftEdge.x ||
+            ship.y < topLeftEdge.y ||
+            ship.x + ship.width > bottomRightEdge.x + bottomRightEdge.width ||
+            ship.y + ship.height > bottomRightEdge.y + bottomRightEdge.height ) {
+                return false;
             }
-        }
+        // console.log(ship);
+        // console.log(topLeftEdge );
+        return true;
+
+}
+
+function logShips(){
+
+    for(ship in shipArray){
+        
+        length = shipCodeLength[ship];
+
     }
-    document.getElementById(`errorText`).textContent = "Cannot Place Ships Out of Bounds!";
-    return false;
 }
+
