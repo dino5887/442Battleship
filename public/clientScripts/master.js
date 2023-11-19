@@ -1,4 +1,5 @@
 export{shipCodeLength, shipCodes};
+import{createStartingBoard} from './createBoard.js';
 //global fields
 var shipCodeLength = {"CV":5, "BB":4, "CL":3, "SS":3, "DD":2};
 var shipCodes = ["CV","BB","CL","SS","DD"];

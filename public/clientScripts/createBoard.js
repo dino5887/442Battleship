@@ -1,15 +1,18 @@
-//Need to add rotation to ships!
-import {shipCodeLength, shipCodes} from './master.js';
-var moverId = null;
-
+import { shipCodeLength,shipCodes } from "./master.js";
 var shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
 
-var boardZone = document.getElementById("boardZone");
-function createStartingBoard(){
-createGrid();
-createShips();
-attachEvents();
-createControlPanel();
+let boardZone = document.getElementById("boardZone");
+
+var moverId = null;
+var myX = null;
+var myY = null;
+
+
+export function createStartingBoard(){
+    createGrid();
+    createShips();
+    attachEvents();
+    createControlPanel();
 }
 
 function createGrid(){
@@ -21,48 +24,48 @@ function createGrid(){
 
             // number of vh per square 5
             // distance in vh from edges of screen 50
-            x = 5 * i + 20;
-            y = 5 * j;
+            let x = 5 * i + 20;
+            let y = 5 * j;
     
             //create grid letters
             if(i == 0){
-                gridLetter = String.fromCharCode(j+65);
-                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                let gridLetter = String.fromCharCode(j+65);
+                let gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 gridNum.setAttribute("x", `${x-5}vh`);
                 gridNum.setAttribute("y", `${y+4}vh`);
                 gridNum.setAttribute("font-size", "4vh");
                 gridNum.setAttribute("fill", "#231f20");
                 gridNum.setAttribute("class", "gridNum");
-                var textNode = document.createTextNode(gridLetter);
+                let textNode = document.createTextNode(gridLetter);
                 gridNum.appendChild(textNode);
                 boardZone.appendChild(gridNum);
             }
 
             //create grid numbers x2
             if(j == 9){
-                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                let gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 gridNum.setAttribute("x", `${x}vh`);
                 gridNum.setAttribute("y", `${y+10}vh`);
                 gridNum.setAttribute("font-size", "4vh");
                 gridNum.setAttribute("fill", "#231f20");
                 gridNum.setAttribute("class", "gridNum");
-                var textNode = document.createTextNode(i+1);
+                let textNode = document.createTextNode(i+1);
                 gridNum.appendChild(textNode);
                 boardZone.appendChild(gridNum);
 
-                var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 gridNum.setAttribute("x", `${x+55}vh`);
                 gridNum.setAttribute("y", `${y+10}vh`);
                 gridNum.setAttribute("font-size", "4vh");
                 gridNum.setAttribute("fill", "#231f20");
                 gridNum.setAttribute("class", "gridNum");
-                var textNode = document.createTextNode(i+1);
+                textNode = document.createTextNode(i+1);
                 gridNum.appendChild(textNode);
                 boardZone.appendChild(gridNum);
             }
 
             //create Ocean and Target Grid Squares
-            var ocean = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            let ocean = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             ocean.setAttribute("x", `${x}vh`);
             ocean.setAttribute("y", `${y}vh`);
             ocean.setAttribute("width", "5vh");
@@ -73,7 +76,7 @@ function createGrid(){
             ocean.setAttribute("id", `ocean_${i}${j}`);
             boardZone.appendChild(ocean);
 
-            var target = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            let target = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             target.setAttribute("x", `${x+55}vh`);
             target.setAttribute("y", `${y}vh`);
             target.setAttribute("width", "5vh");
@@ -86,125 +89,144 @@ function createGrid(){
         }
     }
 
-    var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    let gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
     gridNum.setAttribute("x", `${30}vh`);
     gridNum.setAttribute("y", `${62}vh`);
     gridNum.setAttribute("font-size", "6vh");
     gridNum.setAttribute("fill", "#39b8c9");
     gridNum.setAttribute("class", "gridNum");
-    var textNode = document.createTextNode("Ocean Grid");
+    let textNode = document.createTextNode("Ocean Grid");
     gridNum.appendChild(textNode);
     boardZone.appendChild(gridNum);
 
-    var gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    gridNum = document.createElementNS("http://www.w3.org/2000/svg", "text");
     gridNum.setAttribute("x", `${85}vh`);
     gridNum.setAttribute("y", `${62}vh`);
     gridNum.setAttribute("font-size", "6vh");
     gridNum.setAttribute("fill", "#32CD32");
     gridNum.setAttribute("class", "gridNum");
-    var textNode = document.createTextNode("Target Grid");
+    textNode = document.createTextNode("Target Grid");
     gridNum.appendChild(textNode);
     boardZone.appendChild(gridNum);
 
 }
 
 function createShips(){
-    var CV = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    let CV = document.createElementNS("http://www.w3.org/2000/svg", "image");
     CV.setAttribute("href", "assets/SVG/CV2.svg");
     CV.setAttribute("x", "2vh");
     CV.setAttribute("y", "70vh");
     CV.setAttribute("width", "24.5vh");
     CV.setAttribute("height", "4.5vh");
     CV.setAttribute("id", "CV");
-    CV.setAttribute("onmousedown", "setMove('CV');");
+    CV.setAttribute("class", "ship");
+    CV.addEventListener("mousedown", function(evt){
+        evt.preventDefault();
+        setMove("CV");
+    });
     boardZone.appendChild(CV);
 
-    var BB = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    let BB = document.createElementNS("http://www.w3.org/2000/svg", "image");
     BB.setAttribute("href", "assets/SVG/BB2.svg");
     BB.setAttribute("x", "40vh");
     BB.setAttribute("y", "70vh");
     BB.setAttribute("width", "19.5vh");
     BB.setAttribute("height", "4.5vh");
     BB.setAttribute("id", "BB");
-    BB.setAttribute("onmousedown", "setMove('BB');");
+    BB.setAttribute("class", "ship");
+    BB.addEventListener("mousedown", function(evt){
+        evt.preventDefault();
+        setMove("BB");
+    });
     boardZone.appendChild(BB);
 
-    var CL = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    let CL = document.createElementNS("http://www.w3.org/2000/svg", "image");
     CL.setAttribute("href", "assets/SVG/CL2.svg");
     CL.setAttribute("x", "2vh");
     CL.setAttribute("y", "80vh");
     CL.setAttribute("width", "14.5vh");
     CL.setAttribute("height", "4.5vh");
     CL.setAttribute("id", "CL");
-    CL.setAttribute("onmousedown", "setMove('CL');");
+    CL.setAttribute("class", "ship");
+    CL.addEventListener("mousedown", function(evt){
+        evt.preventDefault();
+        setMove("CL");
+    });
     boardZone.appendChild(CL);
 
-    var SS = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    let SS = document.createElementNS("http://www.w3.org/2000/svg", "image");
     SS.setAttribute("href", "assets/SVG/SS2.svg");
     SS.setAttribute("x", "20vh");
     SS.setAttribute("y", "80vh");
     SS.setAttribute("width", "14.5vh");
     SS.setAttribute("height", "4.5vh");
     SS.setAttribute("id", "SS");
-    SS.setAttribute("onmousedown", "setMove('SS');");
+    SS.setAttribute("class", "ship");
+    SS.addEventListener("mousedown", function(evt){
+        evt.preventDefault();
+        setMove("SS");
+    });
     boardZone.appendChild(SS);
 
-    var DD = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    let DD = document.createElementNS("http://www.w3.org/2000/svg", "image");
     DD.setAttribute("href", "assets/SVG/DD2.svg");
     DD.setAttribute("x", "40vh");
     DD.setAttribute("y", "80vh");
     DD.setAttribute("width", "9.5vh");
     DD.setAttribute("height", "4.5vh");
     DD.setAttribute("id", "DD");
-    DD.setAttribute("onmousedown", "setMove('DD');");
+    DD.setAttribute("class", "ship");
+    DD.addEventListener("mousedown", function(evt){
+        evt.preventDefault();
+        setMove("DD");
+    });
     boardZone.appendChild(DD);
 }
 
 function createControlPanel(){
 
-    var controlPanel = document.getElementById("controlPanel");
-    var gameState = document.createElement("h2");
+    let controlPanel = document.getElementById("controlPanel");
+    let gameState = document.createElement("h2");
     gameState.setAttribute("id", "gameState");
-    var textNode = document.createTextNode("Placement Phase");
+    let textNode = document.createTextNode("Placement Phase");
     gameState.appendChild(textNode);
     controlPanel.appendChild(gameState);
     
-    var playerTurn = document.createElement("h2");
+    let playerTurn = document.createElement("h2");
     playerTurn.setAttribute("id", "playerTurn");
-    var textNode = document.createTextNode("Waiting for Blue & Red");
+    textNode = document.createTextNode("Waiting for Blue & Red");
     playerTurn.appendChild(textNode);
     controlPanel.appendChild(playerTurn);
     
-    var endTurnButton = document.createElement("button");
+    let endTurnButton = document.createElement("button");
     endTurnButton.setAttribute("id", "endTurnButton");
-    endTurnButton.setAttribute("onclick", "logShips();");
-    var textNode = document.createTextNode("End Turn");
+    textNode = document.createTextNode("End Turn");
     endTurnButton.appendChild(textNode);
     controlPanel.appendChild(endTurnButton);
 
-    var bluePlayer = document.createElement("div");
+    let bluePlayer = document.createElement("div");
     bluePlayer.setAttribute("id", "bluePlayer");
-    var bluePlayerName = document.createElement("h3");
+    let bluePlayerName = document.createElement("h3");
     bluePlayerName.setAttribute("id", "bluePlayerName");
-    var textNode = document.createTextNode("Blue: Iowa");
+    textNode = document.createTextNode("Blue: Iowa");
     bluePlayerName.appendChild(textNode);
     bluePlayer.appendChild(bluePlayerName);
     controlPanel.appendChild(bluePlayer);
 
-    var redPlayer = document.createElement("div");
+    let redPlayer = document.createElement("div");
     redPlayer.setAttribute("id", "redPlayer");
-    var redPlayerName = document.createElement("h3");
+    let redPlayerName = document.createElement("h3");
     redPlayerName.setAttribute("id", "redPlayerName");
-    var textNode = document.createTextNode("Red: Bismarck");
+    textNode = document.createTextNode("Red: Bismarck");
     redPlayerName.appendChild(textNode);
     redPlayer.appendChild(redPlayerName);
     controlPanel.appendChild(redPlayer);
 
-    var errorPanel = document.createElement("div");
+    let errorPanel = document.createElement("div");
     errorPanel.setAttribute("id", "errorPanel");
-    var errorText = document.createElement("h2");
+    let errorText = document.createElement("h2");
     errorText.setAttribute("id", "errorText");
-    var textNode = document.createTextNode("No Errors :)");
+    textNode = document.createTextNode("No Errors :)");
     errorText.appendChild(textNode);
     errorPanel.appendChild(errorText);
     controlPanel.appendChild(errorPanel);
@@ -218,20 +240,25 @@ function attachEvents(evt){
     document.getElementsByTagName( `svg` )[0].addEventListener( `mouseup`, releaseMouse );
 }
 
+//put global event listener, if statement for is mover ele 
+document.addEventListener("keydown", event =>{
+    if(moverId){
+    console.log( event );
+    if (event.key === "r") {
+        const moverEle = document.getElementById( moverId );
+        console.log("I'm rotating");
+        console.log(moverEle.style.transform);
+        moverEle.style.transform = 'rotate(90deg)';
+        //moverEle.setAttribute( `transform`, `rotate(90deg)`);
+    }
+    }
+});
+
 function setMove( id ) {
     moverId = id;
     myX = document.querySelector( `#${id}` ).getAttribute( `x` );
     myY = document.querySelector( `#${id}` ).getAttribute( `y` );
     const moverEle = document.getElementById( moverId );
-    //console.log( moverEle );
-    // moverEle.addEventListener("keydown", event =>{
-    //     console.log( evt );
-    //     if (event.key === "r") {
-            
-    //         moverEle.setAttribute( `transform`, `rotate(90deg)`);
-    //     }
-    // }, true);
-    //console.log( myX, myY );
 }
 
 function moveMouse( evt ) {
@@ -246,19 +273,11 @@ function moveMouse( evt ) {
     }
 }
 
-function rotateSelected(evt){
-    
-    if ( moverId ) {
-    const moverEle = document.getElementById( moverId );
-
-    
-    }
-}
 
 function releaseMouse() {
     if ( moverId ) {
-        var onBoard = checkOnBoard(moverId);
-        var noCollide  = checkShipCollision(moverId);
+        let onBoard = checkOnBoard();
+        let noCollide  = checkShipCollision(moverId);
         if(!onBoard){
             document.getElementById(`errorText`).textContent = "Cannot Place Ships Out of Bounds!";
             const moverEle = document.getElementById( moverId );
@@ -270,16 +289,18 @@ function releaseMouse() {
             const moverEle = document.getElementById( moverId );
             moverEle.setAttribute( `x`, myX );
             moverEle.setAttribute( `y`, myY );
+        } else{
+            document.getElementById(`errorText`).textContent = "No Errors :)";
         }
         moverId = undefined;
     }
 }
 
 function checkShipCollision(){
-    placedShip = document.getElementById(moverId).getBBox();
-    for(var i = 0; i < shipCodes.length; i++){
+    let placedShip = document.getElementById(moverId).getBBox();
+    for(let i = 0; i < shipCodes.length; i++){
         if(shipCodes[i] != moverId){
-        otherShip = shipCodes[i];
+        let otherShip = shipCodes[i];
             otherShip = document.getElementById(otherShip).getBBox();
             if(!((placedShip.x + placedShip.width < otherShip.x 
             //Is placed ship far enough left to not be covering?
@@ -297,12 +318,12 @@ function checkShipCollision(){
     return true;
 }
 
-function checkOnBoard(shipID) {
+function checkOnBoard() {
         //check if the ship is out of bounds
 
-        topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
-        bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
-        ship = document.getElementById(shipID).getBBox();
+        let topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
+        let bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
+        let ship = document.getElementById( moverId ).getBBox();
         //topLeft is the most top and left the ship can ever be
         //bottom right is the most bottom and right the ship can ever be
 
@@ -319,44 +340,14 @@ function checkOnBoard(shipID) {
 
 }
 
-function logShips() {
-    for(var i = 0; i < shipCodes.length; i++){
-        ship = shipCodes[i];
-        ship = document.getElementById(ship).getBBox();
-        shiplength = shipCodeLength[shipCodes[i]];
-        if(!checkOnBoard(shipCodes[i])){
-            //check if all ships are on the board, if not, return false and reset shipArray 
-            shipArray = new Array(10).fill().map(() => new Array(10).fill(""));
-            document.getElementById(`errorText`).textContent = "Must place all Ships on the Board!";
-            return false;
-        }
+function logShips(){
 
-        for ( let tileX = 0; tileX < 10; tileX++ ) {
-            for ( let tileY = 0; tileY < 10; tileY++ ) {
-            const drop = document.getElementById( `ocean_${tileX}${tileY}` ).getBBox();
-            
-            //console.log( drop );
-            if ( ship.x > drop.x && ship.x < ( drop.x + drop.width )
-                && ship.y > drop.y && ship.y < ( drop.y + drop.height ) ) {
-            
-                    //console.log(`ocean_${tileX}${tileY}`);
-
-                    //Add this ship to JSON
-                    //console.log(shiplength);
-                    for ( let len = 0; len < shiplength; len++ ) {
-                        //console.log("Tile x:" + tileX);
-                        //console.log("Tile y:" + tileY);
-                        shipArray[tileX+len][tileY] = `${shipCodes[i]}${len}, X`;
-                    }
-                }
-            }
-        }
+    for(ship in shipArray){
+        
+        length = shipCodeLength[ship];
 
     }
-    //console.log(shipArray);
-    finishBoard();
-    return true;
 }
 
-
+export{createGrid}
 
