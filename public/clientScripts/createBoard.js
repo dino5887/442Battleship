@@ -246,9 +246,13 @@ document.addEventListener("keydown", event =>{
     console.log( event );
     if (event.key === "r") {
         const moverEle = document.getElementById( moverId );
-        console.log("I'm rotating");
-        console.log(moverEle.style.transform);
-        moverEle.style.transform = 'rotate(90deg)';
+        if(isRotated(moverId)){
+            console.log("I'm rotating");
+            moverEle.style.transform = 'rotate(0deg)';
+        } else{
+            console.log("I'm rotating");
+            moverEle.style.transform = 'rotate(90deg)';
+        }
         //moverEle.setAttribute( `transform`, `rotate(90deg)`);
     }
     }
@@ -276,6 +280,7 @@ function moveMouse( evt ) {
 
 function releaseMouse() {
     if ( moverId ) {
+        let rotated = isRotated(moverId);
         let onBoard = checkOnBoard();
         let noCollide  = checkShipCollision(moverId);
         if(!onBoard){
@@ -324,6 +329,7 @@ function checkOnBoard() {
         let topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
         let bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
         let ship = document.getElementById( moverId ).getBBox();
+        console.log(ship);
         //topLeft is the most top and left the ship can ever be
         //bottom right is the most bottom and right the ship can ever be
 
@@ -337,7 +343,25 @@ function checkOnBoard() {
         // console.log(ship);
         // console.log(topLeftEdge );
         return true;
+}
 
+function isRotated(id){
+    //check if the element is rotated
+    //from https://css-tricks.com/get-value-of-css-rotation-through-javascript/
+    let el = document.getElementById(id);
+
+    let st = window.getComputedStyle(el, null);
+
+    let tr = st.getPropertyValue("-webkit-transform") ||
+            st.getPropertyValue("-moz-transform") ||
+            st.getPropertyValue("-ms-transform") ||
+            st.getPropertyValue("-o-transform") ||
+            st.getPropertyValue("transform");
+    if(tr != 'none'){
+        return true;
+    } else{
+        return false;
+    }
 }
 
 function logShips(){
