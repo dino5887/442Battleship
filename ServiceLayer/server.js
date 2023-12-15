@@ -20,7 +20,7 @@ express.static('public');
 // default gateway
 // app.get('/', function(req, res) {
 //   res.sendFile(path.join(__dirname, '/public/Game.html'));
-// });
+// });  
 
 
 let server = app.listen(PORT,function(){
