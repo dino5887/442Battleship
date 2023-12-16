@@ -11,7 +11,6 @@ CREATE TABLE `Player` (
 	`idPlayer` INT NOT NULL AUTO_INCREMENT,
 	`username` VARCHAR(20) NOT NULL,
     `password` VARCHAR(100) NOT NULL,
-    `idSession` INT NOT NULL,
     `permissionLVL` TINYINT,
     `InGame` INT,	
 	PRIMARY KEY (`idPlayer`)
@@ -55,8 +54,8 @@ CREATE TABLE `Message` (
   
   
   
-  INSERT INTO Player (username, password, idSession, permissionLVL) VALUES ('RealDean','BycrytpTHIS',430243,1);
-  INSERT INTO Player (username, password, idSession, permissionLVL) VALUES ('NotBrenden','BycrytpTHISTOO','430343',2);
+  INSERT INTO Player (username, password, permissionLVL) VALUES ('RealDean','$2b$10$6CcBFq3GR090jQsHXCY2YOKbUhIlBbN5VAFLwtBdA5vydQ5PIXMg.',1);
+  INSERT INTO Player (username, password, permissionLVL) VALUES ('NotBrenden','$2b$10$kGkDfHGoQYDyBA1eT7ErnOESbnBvNgMEk9mpOCGHo/h6FteUZrpIi',2);
   INSERT INTO Game (idBlue, idRed, bOcean, rOcean, bTarget, rTarget, gameState) VALUES (1, 2,'{}','{}','{}','{}',0);
   
   

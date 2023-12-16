@@ -18,20 +18,25 @@ export class DataLayer{
         this.query = util.promisify(this.connection.query).bind(this.connection);
     }
 
+    async getPlayer(username){
+        let result = [];
+        let sql = "SELECT * FROM Player WHERE username = ?;";
+            const rows = await this.query(sql, [username]);
+            return rows;
+    }
 
     async getPlayers(){
         let result = [];
         let sql = "SELECT * FROM Player;";
-        try{
             const rows = await this.query(sql);
-            result[0] = 'success';
-            result[1] = rows;
+            return rows;   
+    }
+
+    async createPlayer(username, password){
+        let result = [];
+        let sql = "INSERT INTO Player (username, password) VALUES (?, ?);";
+            const rows = await this.query(sql, [username, password]);
             return rows;
-        } catch (err){
-            result[0] = 'failure';
-            result[1] = err;
-            return result;
-        }
     }
-    
-    }
+
+}
