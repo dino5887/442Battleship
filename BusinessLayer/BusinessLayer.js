@@ -11,6 +11,53 @@ export class BusinessLayer{
         this.dataLayer = new DataLayer();
     }
 
+    async getMessage(idMessage){
+        let result = null;
+        try{
+            result = await this.dataLayer.getMessage(idMessage);
+        }
+        catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
+    async getLast10Messages(parentChat){
+        let result = null;
+        try{
+            result = await this.dataLayer.getLast10Messages(parentChat);
+        } catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
+    async createChat(idGame){
+        let result = null;
+        let time = new Date();
+        try{
+            result = await this.dataLayer.createChat(idGame, time);
+        } catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
+    async createMessage(idAuthor, parentChat, content){
+        //content length validation
+        check(content).isLength({min: 1, max: 200}).withMessage("Message must be between 1 and 200 characters");
+
+        let time = new Date();
+
+        let result = null;
+        try{
+            result = await this.dataLayer.createMessage(idAuthor, time, parentChat, content);
+        } catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
 
     async createPlayer(username, password){
         
@@ -28,7 +75,7 @@ export class BusinessLayer{
             let result = await this.dataLayer.createPlayer(username, password);
             return result;
         } catch (error){
-            console.log(error);
+            throw new Error(error);
         }
     }
 
@@ -52,7 +99,7 @@ export class BusinessLayer{
     };
 
 
-    async getUser(username){
+    async getPlayer(username){
         let result = null;
         result = await this.dataLayer.getPlayer(username);
         if(result.length == 0){
@@ -61,7 +108,7 @@ export class BusinessLayer{
             return result[0];
         }
     }
-    
+
 
     async getPlayers(){
         let result = await this.dataLayer.getPlayers();
