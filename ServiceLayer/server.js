@@ -135,13 +135,12 @@ app.get('/home', verifyToken, function(req, res) {
 io.on('connection', async (socket) => {
 
 
-  socket.on('join room', (input) => {
+  socket.on('join room', async (input) => {
     input = bParse(input);
     let token = input['token'];
     //Find out who sent the message
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      //This should make it impossible to inject sql here
       throw new Error("Invalid Token");
     }
 
@@ -149,7 +148,7 @@ io.on('connection', async (socket) => {
     let tokenidPlayer = decoded.idPlayer;
 
     //Is the player in a game?
-    let player = bLayer.getPlayer(tokenUsername);
+    let player = await bLayer.getPlayer(tokenUsername);
     let curGame = null;
     if(player.inGame == null){
       curGame = 1;      
@@ -166,21 +165,19 @@ io.on('connection', async (socket) => {
     let token = input['token'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      //This should make it impossible to inject sql here
       throw new Error("Invalid Token");
     }
 
-    gameString = "challenge/" + decoded.username;
+    let gameString = "challenge/" + decoded.username;
 
     socket.join(gameString);
   });   
 
-  socket.on('challenge', (input) => {
+  socket.on('challenge', async (input) => {
     input = bParse(input);
     let token = input['token'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      //This should make it impossible to inject sql here
       throw new Error("Invalid Token");
     }
 
@@ -190,44 +187,90 @@ io.on('connection', async (socket) => {
     
     //reciever
     let reciever = input['username'];
-
+    let player = null;
     //Is the player in a game?
-    let player = bLayer.getPlayer(tokenidPlayer);
+    try{
+      player = await bLayer.getPlayer(tokenUsername);
+    } catch(error){
+      throw new Error("Player does not exist");
+    }
+
     let playerGame = null;
     if(player.inGame == null){
-      curGame = 1;
+      let curGame = 1;
     } else{
       throw new Error("This Player is already in a game!");
     }
 
     //is the enemy in a game?
-    let enemyid = bLayer.getPlayer(tokenidPlayer);
+    let enemyid = await bLayer.getPlayer(reciever);
     let enemyGame = null;
     if(enemyid.inGame == null){
-      curGame = 1;
+      let curGame = 1;
     } else{
       throw new Error("This Player is already in a game!");
     }
 
     //issue the challenge
-    io.to("challenge/" + reciever).emit('recieve challenge', tokenUsername);
+    socket.join("challenge/" + reciever);
 
+    let result = [tokenUsername];
+    io.to("challenge/" + reciever).emit('recieve challenge', result);
   });
 
-  socket.on('chat message', (input) => {
+  socket.on('accept challenge', async (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      throw new Error("Invalid Token");
+    }
+    let enemyName = input['enemyName'];
+    
+    
+    
+    //create new game
+
+    //get enemy id
+    let enemy = await bLayer.getPlayer(enemyName);
+    let enemyid = enemy.idPlayer;
+
+
+    let game = await bLayer.createGame(decoded.idPlayer, enemyid);
+
+    console.log('hi');
+    io.to("challenge/" + decoded.username).emit('challenge accepted', enemyName);
+  });
+
+  //needs work
+  socket.on('decline challenge', async (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      throw new Error("Invalid Token");
+    }
+
+    //have the other player leave your challenge room
+    if(io.sockets.adapter.rooms.has("challenge/" + decoded.username)){
+
+    io.to("challenge/" + decoded.username).emit('challenge declined', input['username']);
+  }
+  });
+
+  socket.on('chat message', async (input) => {
     input = bParse(input);
     let token = input['token'];
     let msg = input['msg'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      //This should make it impossible to inject sql here
       throw new Error("Invalid Token");
     }
-    console.log(decoded);
     let tokenidPlayer = decoded.idPlayer;
     let tokenUsername = decoded.username;
+  
+    let player = await bLayer.getPlayer(tokenUsername);
 
-    let player = bLayer.getPlayer(tokenUsername);
 
     let curGame = null;
     if(player.inGame == null){
@@ -236,15 +279,12 @@ io.on('connection', async (socket) => {
       curGame = player.inGame;
     }
 
-    console.log('message: ' + msg);
     check(msg).isLength({min: 1, max: 200}).trim().escape();
     
 
     //Create message in the database using the data
     bLayer.createMessage(tokenidPlayer, curGame, msg);
-    console.log(tokenUsername);
-    let result = [tokenUsername, msg, Date.now()];
-
+    let result = [tokenUsername, msg, Date.now().toString()];
     io.to(curGame).emit('chat message', result);
   });
 
@@ -252,50 +292,8 @@ io.on('connection', async (socket) => {
 });
 
 
-
-// io.on('connection', (socket) => {
-//   console.log('a user connected');
-//   socket.on('chat message', (msg, token) => {
-//       console.log('message: ' + msg);
-
-//       //Find out who sent the message
-//       const decoded = jsonwebtoken.verify(token, secret);
-//       if(!decoded){
-//         //This should make it impossible to inject sql here
-//         throw new Error("Invalid Token");
-//       }
-
-//       let tokenUsername = decoded.userId;
-
-//       //Is the player in a game?
-//       let player = bLayer.getPlayer(tokenUsername);
-      
-//       if(player.inGame == null){
-
-//       } else{
-
-//       }
-
-//       //Create message in the database using the data
-
-
-//       io.emit('chat message', result);
-//   });
-// });
-
-
 server.listen(PORT,function(){
   console.log("Server running at port" + PORT);
 });
 
-// const wss = new WebSocketServer({ server });
-// wss.on('connection', (client) => {
-//     console.log(client);
-//     console.log('Client connected !')
-//     client.on('message', (msg) => {
-//         console.log(`Message:${msg}`);
-//         wss.clients.forEach((client) => {
-//             client.send(msg);
-//         });
-//     });
-// })
+

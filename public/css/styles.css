@@ -95,16 +95,31 @@ body{
     color: #fff;
 }
 
-#messageContainer {
+#messages {
+    padding:0;
     list-style-type: none;
-    margin: 30%;
-    padding: 0;
 }
 #messageContainer > li {
     padding: 0.5rem 1rem;
 }
-#messageContainer > li:nth-child(odd) {
-    background: #efefef;
+
+#messages > li:nth-child(odd) { 
+    background: pink; 
 }
 
+
+.mainMsgContainer{
+    display:flex;
+    margin-left:20px;
+    margin-right:20px;
+}
+
+.mainMsgContent{
+    padding-left:10px;
+}
+
+.dateContainer{
+    width:100%;
+    text-align: end;
+}
 

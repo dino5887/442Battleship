@@ -36,6 +36,7 @@
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             if (msg.value) {
+                console.log("sending message " + msg.value + " " + token.value);
                 socket.emit("chat message", {msg: msg.value, token: token.value});
                 msg.value = "";
             }
@@ -50,36 +51,100 @@
 
         //send chat messages to others in room
         socket.on("chat message", function(result) {
-                const item = document.createElement('li');
-                item.class = "message";
-                
-                let content = result[0];
-                let username = result[1];
-                let time = result[2];
+            const item = document.createElement('li');
+            item.class = "message";
+            
+            let username = result[0];
+            let content = result[1];
+            let time = result[2];
 
-                let mainMsgContainer = document.createElement('div');
+            let mainMsgContainer = document.createElement('div');
+            mainMsgContainer.setAttribute("class", "mainMsgContainer");
 
-                mainMsgContainer.class = "mainMsgContainer";
+            let mainMsgUsernameLink = document.createElement('p');
+            mainMsgUsernameLink.setAttribute("class", "mainMsgUsernameLink");
+            mainMsgUsernameLink.addEventListener("click", function(e) {
+                console.log("clicked on ");
+                socket.emit("challenge", {token: token.value, username: username});
+            });
+            let mainMsgUsernameLinkText = document.createTextNode(username + ":");
+            mainMsgUsernameLink.appendChild(mainMsgUsernameLinkText);
+            
+            let mainMsgContent = document.createElement('p');
+            mainMsgContent.setAttribute("class", "mainMsgContent");
+            let mainMsgContentText = document.createTextNode(content);
+            mainMsgContent.appendChild(mainMsgContentText);
 
-                let mainMsgUsernameLink = document.createElement('p');
-                mainMsgUsernameLink.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    socket.emit("challenge", {token: token.value, username: username});
-                });
-                //let mainMsgUsernameLink = document.createElement('a');
-                //mainMsgUsernameLink.href = "/challenge?username=" + username;
+            let dateContainer = document.createElement('div');
+            dateContainer.setAttribute("class", "dateContainer");
+            let dateMsg = document.createElement('p');
+            dateMsg.setAttribute("class", "dateMsg");
+            let dateMsgText = document.createTextNode(time);
+            dateMsg.appendChild(dateMsgText);
+            dateContainer.appendChild(dateMsg);
+
+            item.appendChild(mainMsgContainer);
+            mainMsgContainer.appendChild(mainMsgUsernameLink);
+            mainMsgContainer.appendChild(mainMsgContent);
+            mainMsgContainer.appendChild(dateContainer);
+
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
 
 
-                mainMsgText.text = username + ": " + content;
-                mainMsg.appendChild(mainMsgText);
+        socket.on("recieve challenge", function(result) {
+            console.log('hi');
+            const item = document.createElement('li');
+            item.class = "message";
+            
+            let username = result[0];
 
-                let dateMsg = document.createElement('p');
-                let dateMsgText = document.createTextNode(time);
-                dateMsgText.text = time;
-                dateMsg.appendChild(dateMsgText);
+            let replyMsgContainer = document.createElement('div');
+            replyMsgContainer.setAttribute("class", "replyMsgContainer");
 
-                messages.appendChild(item);
-                window.scrollTo(0, document.body.scrollHeight);
+            let replyMsgUsername = document.createElement('p');
+            replyMsgUsername.setAttribute("class", "replyMsgUsername");
+            let replyMsgUsernameText = document.createTextNode(username);
+            replyMsgUsername.appendChild(replyMsgUsernameText);
+            
+            let replyString = document.createElement('p');
+            replyString.setAttribute("class", "replyString");
+            let replyStringText = document.createTextNode(" has challenged you to a game of Battleship!");
+            replyString.appendChild(replyStringText);
+
+            let acceptButton = document.createElement('button');
+            acceptButton.setAttribute("class", "acceptButton");
+            let acceptButtonText = document.createTextNode("Accept");
+            acceptButton.appendChild(acceptButtonText);
+            acceptButton.onclick = function() {
+                socket.emit("accept challenge", {token: token.value, enemyName: username});
+            };
+
+            let rejectButton = document.createElement('button');
+            rejectButton.setAttribute("class", "rejectButton");
+            let rejectButtonText = document.createTextNode("Reject");
+            rejectButton.appendChild(rejectButtonText);
+            rejectButton.onclick = function() {
+                socket.emit("reject challenge", {token: token.value, enemyName: username});
+            };
+
+            item.appendChild(replyMsgContainer);
+            replyMsgContainer.appendChild(replyMsgUsername);
+            replyMsgContainer.appendChild(replyString);
+            replyMsgContainer.appendChild(acceptButton);
+            replyMsgContainer.appendChild(rejectButton);
+            messages.appendChild(item);
+
+        });
+
+        socket.on("challenge rejected", function(result) {
+            console.log("challenge rejected");
+        });
+
+        socket.on("challenge accepted", function(result) {
+            console.log("challenge accepted");
+            window.location.href = "/game";
         });
 
         </script>

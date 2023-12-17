@@ -11,6 +11,21 @@ export class BusinessLayer{
         this.dataLayer = new DataLayer();
     }
 
+
+
+    async createGame(idBlue, idRed){
+        let result = null;
+        let time = new Date();
+        let gameState = 0;
+        try{
+            result = await this.dataLayer.createGame(idBlue, idRed, time, gameState);
+        } catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
+
     async getMessage(idMessage){
         let result = null;
         try{

@@ -18,7 +18,13 @@ export class DataLayer{
         this.query = util.promisify(this.connection.query).bind(this.connection);
     }
 
-    
+    async createGame(idBlue, idRed, time, gameState){
+        let result = [];
+        let sql = "INSERT INTO Game (idBlue, idRed, timeStamp, gameState) VALUES (?, ?, ?, ?);";
+            const rows = await this.query(sql, [idBlue, idRed, time, gameState]);
+            return rows;
+    }
+
     async getMessage(idMessage){
         let result = [];
         let sql = "SELECT * FROM Message WHERE idMessage = ?;";
