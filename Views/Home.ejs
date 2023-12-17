@@ -6,12 +6,9 @@
         <link rel="stylesheet" type="text/css" href="public/css/styles.css">
         <title>Login Page</title>
     </head>
-    <body>
-
+    <body onload="oldmessages()">
         <h1>Welcome to Battleship!</h1>
         <p>Click on someone else's name in chat to challenge them to a game of battleship!</p>
-
-
         <p>Messages:</p>
         <div class="messageContainer">
         <ul id="messages"></ul>
@@ -20,9 +17,6 @@
             <input id="msg" autocomplete="off" />
             <button>Send</button>
         </form>
-
-
-
         <script src="/socket.io/socket.io.js"></script>
         <script>
         const socket = io();
@@ -33,6 +27,28 @@
 
         const messages = document.getElementById("messages");
         
+        async function oldmessages() {
+            const response = await fetch ("/oldMessages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+            const result = await response.json();
+            console.log(result);
+            if(result.length > 0){
+                result.forEach(
+                    (message) =>
+                    {
+                        let username = message.username;
+                        let content = message.content;
+                        let time = message.tiumestamp;
+                        createMessage(username, content, time);
+                    }
+                )
+            }       
+        }
+
         form.addEventListener("submit", function(e) {
             e.preventDefault();
             if (msg.value) {
@@ -40,7 +56,6 @@
                 socket.emit("chat message", {msg: msg.value, token: token.value});
                 msg.value = "";
             }
-
         });
 
         //join room (only called once)
@@ -49,15 +64,9 @@
         //join challenge room (only called once)
         socket.emit("join challenge room", {token: token.value});
 
-        //send chat messages to others in room
-        socket.on("chat message", function(result) {
+        function createMessage(username, content, time){
             const item = document.createElement('li');
             item.class = "message";
-            
-            let username = result[0];
-            let content = result[1];
-            let time = result[2];
-
             let mainMsgContainer = document.createElement('div');
             mainMsgContainer.setAttribute("class", "mainMsgContainer");
 
@@ -90,11 +99,19 @@
 
             messages.appendChild(item);
             window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        //send chat messages to others in room
+        socket.on("chat message", function(result) {            
+            let username = result[0];
+            let content = result[1];
+            let time = result[2];
+
+            createMessage(username, content, time);
         });
 
 
         socket.on("recieve challenge", function(result) {
-            console.log('hi');
             const item = document.createElement('li');
             item.class = "message";
             
@@ -142,9 +159,10 @@
             console.log("challenge rejected");
         });
 
-        socket.on("challenge accepted", function(result) {
+        socket.on("challenge accepted", function(gameid) {
             console.log("challenge accepted");
-            window.location.href = "/game";
+            let gameString = "/game?gameid=" + gameid;
+            window.location.href = gameString;
         });
 
         </script>

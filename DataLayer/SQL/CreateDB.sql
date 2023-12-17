@@ -12,14 +12,14 @@ CREATE TABLE `Player` (
 	`username` VARCHAR(20) NOT NULL,
     `password` VARCHAR(100) NOT NULL,
     `permissionLVL` TINYINT,
-    `inGame` INT,	
+    `inGame` INT NOT NULL DEFAULT 1,	
 	PRIMARY KEY (`idPlayer`)
 );
 
 
 CREATE TABLE `Game` (
   `idGame` INT AUTO_INCREMENT,
-  `idBlue` INT NOT NULL, 
+  `idBlue` INT NOT NULL,
   `idRed` INT NOT NULL,
   `bOcean` JSON,
   `rOcean` JSON,

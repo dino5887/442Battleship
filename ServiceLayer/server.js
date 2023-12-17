@@ -122,13 +122,40 @@ app.get('/home', verifyToken, function(req, res) {
     };
   } catch{
     json = {
-      messages: "No Messages Yet"    
+      messages: "No Messages Yet"
     };
   }
-  //console.log(json);
   res.status(200).render('Home.ejs', json);
+});
 
+app.post('/oldMessages', verifyToken, async function(req, res) {
+  
+  //find what game the user is in
+  let userGame = await bLayer.getPlayer(req.tokenUsername)
 
+  let last10Messages = await bLayer.getLast10Messages(userGame.inGame);
+  res.status(200).json(last10Messages);
+});
+
+app.get('/game', verifyToken, async function(req, res) {
+  console.log('game posted');
+  
+  const gameId = req.query.gameId;
+  if(!gameId){
+    res.status(400).send("Game ID is required");
+  }
+
+  let game = await bLayer.getGame(gameId);
+  console.log(game);
+  const json = {
+    gameId: gameId,
+    myUsername: req.tokenUsername,
+    myidPlayer: req.tokenidPlayer,
+    blueId: game.idBlue,
+    redId: game.idRed
+  }
+
+  res.status(200).render('Game.ejs', json);
 });
 
 
@@ -149,12 +176,7 @@ io.on('connection', async (socket) => {
 
     //Is the player in a game?
     let player = await bLayer.getPlayer(tokenUsername);
-    let curGame = null;
-    if(player.inGame == null){
-      curGame = 1;      
-    } else{
-      curGame = player.inGame;
-    }
+    let curGame = player.inGame;
     console.log('a user connected from game ' + curGame);
     socket.join(curGame);
   });
@@ -196,26 +218,25 @@ io.on('connection', async (socket) => {
     }
 
     let playerGame = null;
-    if(player.inGame == null){
-      let curGame = 1;
-    } else{
+    if(player.inGame != 1){
       throw new Error("This Player is already in a game!");
     }
 
     //is the enemy in a game?
     let enemyid = await bLayer.getPlayer(reciever);
     let enemyGame = null;
-    if(enemyid.inGame == null){
-      let curGame = 1;
-    } else{
+    if(enemyid.inGame != 1){
       throw new Error("This Player is already in a game!");
     }
 
     //issue the challenge
     socket.join("challenge/" + reciever);
 
-    let result = [tokenUsername];
-    io.to("challenge/" + reciever).emit('recieve challenge', result);
+    //Need to fix this so issuer can't see it, can't figure it out rn
+    let issuer = [tokenUsername];
+
+
+    io.to("challenge/" + reciever).emit('recieve challenge', issuer);
   });
 
   socket.on('accept challenge', async (input) => {
@@ -227,19 +248,18 @@ io.on('connection', async (socket) => {
     }
     let enemyName = input['enemyName'];
     
-    
-    
     //create new game
-
     //get enemy id
     let enemy = await bLayer.getPlayer(enemyName);
     let enemyid = enemy.idPlayer;
-
-
     let game = await bLayer.createGame(decoded.idPlayer, enemyid);
+    console.log(game);
 
-    console.log('hi');
-    io.to("challenge/" + decoded.username).emit('challenge accepted', enemyName);
+    //update player inGame
+    await bLayer.updatePlayerInGame(decoded.idPlayer, game.insertId);
+    await bLayer.updatePlayerInGame(enemyid, game.insertId);
+
+    io.to("challenge/" + decoded.username).emit('challenge accepted', game.insertId);
   });
 
   //needs work
@@ -268,7 +288,6 @@ io.on('connection', async (socket) => {
     }
     let tokenidPlayer = decoded.idPlayer;
     let tokenUsername = decoded.username;
-  
     let player = await bLayer.getPlayer(tokenUsername);
 
 

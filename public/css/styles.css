@@ -108,7 +108,7 @@ body{
 }
 
 
-.mainMsgContainer{
+.mainMsgContainer, .replyMsgContainer{
     display:flex;
     margin-left:20px;
     margin-right:20px;
@@ -116,6 +116,7 @@ body{
 
 .mainMsgContent{
     padding-left:10px;
+    min-width:70%;
 }
 
 .dateContainer{

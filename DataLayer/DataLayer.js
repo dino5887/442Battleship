@@ -18,10 +18,17 @@ export class DataLayer{
         this.query = util.promisify(this.connection.query).bind(this.connection);
     }
 
-    async createGame(idBlue, idRed, time, gameState){
+    async getGame(idGame){
         let result = [];
-        let sql = "INSERT INTO Game (idBlue, idRed, timeStamp, gameState) VALUES (?, ?, ?, ?);";
-            const rows = await this.query(sql, [idBlue, idRed, time, gameState]);
+        let sql = "SELECT * FROM Game WHERE idGame = ?;";
+            const rows = await this.query(sql, [idGame]);
+            return rows;
+    }
+
+    async createGame(idBlue, idRed, gameState){
+        let result = [];
+        let sql = "INSERT INTO Game (idBlue, idRed, gameState) VALUES (?, ?, ?);";
+            const rows = await this.query(sql, [idBlue, idRed, gameState]);
             return rows;
     }
 
@@ -34,7 +41,7 @@ export class DataLayer{
 
     async getLast10Messages(parentChat){
         let result = [];
-        let sql = "SELECT * FROM Message WHERE parentChat = ? ORDER BY timeStamp DESC LIMIT 10;";
+        let sql = "SELECT Message.idAuthor, Message.timeStamp, Message.content, Player.username FROM Message INNER JOIN Player ON Message.idAuthor = Player.idPlayer WHERE parentChat = ? ORDER BY timeStamp DESC LIMIT 10;";
             const rows = await this.query(sql, [parentChat]);
             return rows;
     }
@@ -67,6 +74,13 @@ export class DataLayer{
         let sql = "SELECT * FROM Player;";
             const rows = await this.query(sql);
             return rows;   
+    }
+
+    async updatePlayerInGame(idPlayer, idGame){
+        let result = [];
+        let sql = "UPDATE Player SET inGame = ? WHERE idPlayer = ?;";
+            const rows = await this.query(sql, [idGame, idPlayer]);
+            return rows;
     }
 
     async createPlayer(username, password){
