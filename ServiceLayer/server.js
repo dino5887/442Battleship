@@ -6,11 +6,12 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import cookieParser from 'cookie-parser';
 import {Server} from 'socket.io';
+import {check } from 'express-validator';
 //import ws, {WebSocketServer} from 'ws';
 
 
 import jsonwebtoken from 'jsonwebtoken';
-import sanitize from 'sanitize';
+
 
 
 const app = express();
@@ -39,7 +40,6 @@ app.use(cookieParser());
 
 
 //security middleware
-app.use(sanitize.middleware);
 
 app.get('/', function(req, res) {
   const token = req.cookies.token;
@@ -61,6 +61,11 @@ app.get('/', function(req, res) {
   }
 });  
 
+function bParse(input){
+  let output = JSON.stringify(input);
+  output = JSON.parse(output);
+  return output
+}
 
 app.post('/loginRequest',async function(req, res) {
   const {username, password} = req.body;
@@ -85,7 +90,6 @@ app.get('/logout', (req, res) => {
 
 // Middleware to verify token
 function verifyToken(req, res, next) {
-  console.log(req.cookies);
   const token  = req.cookies.token;
 
   if (!token) {
@@ -121,7 +125,7 @@ app.get('/home', verifyToken, function(req, res) {
       messages: "No Messages Yet"    
     };
   }
-  console.log(json);
+  //console.log(json);
   res.status(200).render('Home.ejs', json);
 
 
@@ -130,7 +134,10 @@ app.get('/home', verifyToken, function(req, res) {
 
 io.on('connection', async (socket) => {
 
-  socket.on('join room', (token) => {
+
+  socket.on('join room', (input) => {
+    input = bParse(input);
+    let token = input['token'];
     //Find out who sent the message
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
@@ -153,7 +160,10 @@ io.on('connection', async (socket) => {
     socket.join(curGame);
   });
 
-  socket.on('chat message', (msg, token) => {
+  socket.on('chat message', (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    let msg = input['msg'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
       //This should make it impossible to inject sql here
@@ -173,8 +183,8 @@ io.on('connection', async (socket) => {
     }
 
     console.log('message: ' + msg);
-
-    msg = sanitize(msg);
+    check (msg).isLength({min: 1, max: 200}).withMessage("Message must be between 1 and 200 characters").trim().escape();
+    msg = sanitize.value(msg);
 
     //Create message in the database using the data
     bLayer.createMessage(tokenidPlayer, Date.now(), curGame, msg);
