@@ -43,13 +43,41 @@
         });
 
         //join room (only called once)
-        //console.log(token.value);
         socket.emit("join room", {token: token.value});
+
+        //join challenge room (only called once)
+        socket.emit("join challenge room", {token: token.value});
 
         //send chat messages to others in room
         socket.on("chat message", function(result) {
                 const item = document.createElement('li');
-                item.textContent = result[0];
+                item.class = "message";
+                
+                let content = result[0];
+                let username = result[1];
+                let time = result[2];
+
+                let mainMsgContainer = document.createElement('div');
+
+                mainMsgContainer.class = "mainMsgContainer";
+
+                let mainMsgUsernameLink = document.createElement('p');
+                mainMsgUsernameLink.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    socket.emit("challenge", {token: token.value, username: username});
+                });
+                //let mainMsgUsernameLink = document.createElement('a');
+                //mainMsgUsernameLink.href = "/challenge?username=" + username;
+
+
+                mainMsgText.text = username + ": " + content;
+                mainMsg.appendChild(mainMsgText);
+
+                let dateMsg = document.createElement('p');
+                let dateMsgText = document.createTextNode(time);
+                dateMsgText.text = time;
+                dateMsg.appendChild(dateMsgText);
+
                 messages.appendChild(item);
                 window.scrollTo(0, document.body.scrollHeight);
         });

@@ -160,6 +160,60 @@ io.on('connection', async (socket) => {
     socket.join(curGame);
   });
 
+  //Every player has a challenge room
+  socket.on('join challenge room', (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      //This should make it impossible to inject sql here
+      throw new Error("Invalid Token");
+    }
+
+    gameString = "challenge/" + decoded.username;
+
+    socket.join(gameString);
+  });   
+
+  socket.on('challenge', (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      //This should make it impossible to inject sql here
+      throw new Error("Invalid Token");
+    }
+
+    //issuer
+    let tokenUsername = decoded.username;
+    let tokenidPlayer = decoded.idPlayer;
+    
+    //reciever
+    let reciever = input['username'];
+
+    //Is the player in a game?
+    let player = bLayer.getPlayer(tokenidPlayer);
+    let playerGame = null;
+    if(player.inGame == null){
+      curGame = 1;
+    } else{
+      throw new Error("This Player is already in a game!");
+    }
+
+    //is the enemy in a game?
+    let enemyid = bLayer.getPlayer(tokenidPlayer);
+    let enemyGame = null;
+    if(enemyid.inGame == null){
+      curGame = 1;
+    } else{
+      throw new Error("This Player is already in a game!");
+    }
+
+    //issue the challenge
+    io.to("challenge/" + reciever).emit('recieve challenge', tokenUsername);
+
+  });
+
   socket.on('chat message', (input) => {
     input = bParse(input);
     let token = input['token'];
@@ -169,9 +223,9 @@ io.on('connection', async (socket) => {
       //This should make it impossible to inject sql here
       throw new Error("Invalid Token");
     }
-
+    console.log(decoded);
     let tokenidPlayer = decoded.idPlayer;
-    let tokenUsername = decoded.userId;
+    let tokenUsername = decoded.username;
 
     let player = bLayer.getPlayer(tokenUsername);
 
@@ -183,12 +237,13 @@ io.on('connection', async (socket) => {
     }
 
     console.log('message: ' + msg);
-    check (msg).isLength({min: 1, max: 200}).withMessage("Message must be between 1 and 200 characters").trim().escape();
-    msg = sanitize.value(msg);
+    check(msg).isLength({min: 1, max: 200}).trim().escape();
+    
 
     //Create message in the database using the data
-    bLayer.createMessage(tokenidPlayer, Date.now(), curGame, msg);
-    result = [tokenUsername, msg, Date.now()];
+    bLayer.createMessage(tokenidPlayer, curGame, msg);
+    console.log(tokenUsername);
+    let result = [tokenUsername, msg, Date.now()];
 
     io.to(curGame).emit('chat message', result);
   });
