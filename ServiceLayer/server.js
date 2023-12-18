@@ -104,7 +104,7 @@ function verifyToken(req, res, next) {
       req.tokenidPlayer = decoded.idPlayer;
       next();
   } catch(error){
-      res.status(401).json({ error: 'Invalid token', errorDescription: 'Token is invalid' });
+      res.status(403).redirect('/');
   }
 };
 

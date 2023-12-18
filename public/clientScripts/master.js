@@ -160,6 +160,8 @@ export function endTurn(){
         window.scrollTo(0, document.body.scrollHeight);
     }
 
+    
+
     //send chat messages to others in room
     socket.on("chat message", function(result) {            
         let username = result[0];
