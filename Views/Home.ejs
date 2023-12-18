@@ -75,6 +75,7 @@
             mainMsgUsernameLink.setAttribute("class", "mainMsgUsernameLink");
             mainMsgUsernameLink.addEventListener("click", function(e) {
                 console.log("clicked on ");
+                socket.emit("join challenge room", {token: token.value});
                 socket.emit("challenge", {token: token.value, username: username});
             });
             let mainMsgUsernameLinkText = document.createTextNode(username + ":");

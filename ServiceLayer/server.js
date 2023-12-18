@@ -188,7 +188,7 @@ io.on('connection', async (socket) => {
     }
 
     let gameString = "challenge/" + decoded.username;
-
+    console.log('a user connected to ' + gameString); 
     socket.join(gameString);
   });   
 
