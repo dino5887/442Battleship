@@ -15,10 +15,10 @@ export function createStartingBoard(){
     createGrid();
     createShips();
     attachEvents();
-    createControlPanel();
 }
 
 function createGrid(){
+    //this is for states 0, 1, and 2
     for ( let i = 0; i < 10; i++ ) {
         for ( let j = 0; j < 10; j++ ) {
 
@@ -184,55 +184,6 @@ function createShips(){
         setMove("DD");
     });
     boardZone.appendChild(DD);
-}
-
-function createControlPanel(){
-
-    let controlPanel = document.getElementById("controlPanel");
-    let gameState = document.createElement("h2");
-    gameState.setAttribute("id", "gameState");
-    let textNode = document.createTextNode("Placement Phase");
-    gameState.appendChild(textNode);
-    controlPanel.appendChild(gameState);
-    
-    let playerTurn = document.createElement("h2");
-    playerTurn.setAttribute("id", "playerTurn");
-    textNode = document.createTextNode("Waiting for Blue & Red");
-    playerTurn.appendChild(textNode);
-    controlPanel.appendChild(playerTurn);
-    
-    let endTurnButton = document.createElement("button");
-    endTurnButton.setAttribute("id", "endTurnButton");
-    textNode = document.createTextNode("End Turn");
-    endTurnButton.appendChild(textNode);
-    controlPanel.appendChild(endTurnButton);
-
-    let bluePlayer = document.createElement("div");
-    bluePlayer.setAttribute("id", "bluePlayer");
-    let bluePlayerName = document.createElement("h3");
-    bluePlayerName.setAttribute("id", "bluePlayerName");
-    textNode = document.createTextNode("Blue: Iowa");
-    bluePlayerName.appendChild(textNode);
-    bluePlayer.appendChild(bluePlayerName);
-    controlPanel.appendChild(bluePlayer);
-
-    let redPlayer = document.createElement("div");
-    redPlayer.setAttribute("id", "redPlayer");
-    let redPlayerName = document.createElement("h3");
-    redPlayerName.setAttribute("id", "redPlayerName");
-    textNode = document.createTextNode("Red: Bismarck");
-    redPlayerName.appendChild(textNode);
-    redPlayer.appendChild(redPlayerName);
-    controlPanel.appendChild(redPlayer);
-
-    let errorPanel = document.createElement("div");
-    errorPanel.setAttribute("id", "errorPanel");
-    let errorText = document.createElement("h2");
-    errorText.setAttribute("id", "errorText");
-    textNode = document.createTextNode("No Errors :)");
-    errorText.appendChild(textNode);
-    errorPanel.appendChild(errorText);
-    controlPanel.appendChild(errorPanel);
 }
 
 function attachEvents(evt){

@@ -142,14 +142,34 @@ app.get('/game', verifyToken, async function(req, res) {
   if(!gameId){
     res.status(400).send("Game ID is required");
   }
+  console.log(gameId);
   let game = await bLayer.getGame(gameId);
+  game = game[0];
+  let enemyUser = null;
+  let userColor = null;
+  let enemyColor = null;
+  if(game.idBlue != req.tokenidPlayer){
+    enemyUser = await bLayer.getPlayerID(game.idBlue);
+    userColor = "Red";
+    enemyColor = "Blue";
+  } else{
+    enemyUser = await bLayer.getPlayerID(game.idRed);
+    userColor = "Blue";
+    enemyColor = "Red";
+  }
+  
   const json = {
     gameId: gameId,
     myUsername: req.tokenUsername,
+    enemyUsername: enemyUser.username,
     myidPlayer: req.tokenidPlayer,
+    userColor: userColor,
+    enemyColor: enemyColor,
     blueId: game.idBlue,
     redId: game.idRed,
-    token: req.cookies.token
+    token: req.cookies.token,
+    gameState: game.gameState,
+    currentTurn: game.currentTurn
   }
 
   res.status(200).render('Game.ejs', json);

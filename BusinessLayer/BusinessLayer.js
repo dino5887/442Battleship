@@ -131,9 +131,8 @@ export class BusinessLayer{
     };
 
 
-    async getPlayer(username){
-        let result = null;
-        result = await this.dataLayer.getPlayer(username);
+    async getPlayerID(idPlayer){
+        let result = await this.dataLayer.getPlayerID(idPlayer);
         if(result.length == 0){
             throw new Error("User Does not Exist");
         } else if (result.length == 1){
@@ -141,6 +140,14 @@ export class BusinessLayer{
         }
     }
 
+    async getPlayer(username){
+        let result = await this.dataLayer.getPlayer(username);
+        if(result.length == 0){
+            throw new Error("User Does not Exist");
+        } else if (result.length == 1){
+            return result[0];
+        }
+    }
 
     async getPlayers(){
         let result = await this.dataLayer.getPlayers();
