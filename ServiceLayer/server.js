@@ -68,12 +68,30 @@ function bParse(input){
   return output
 }
 
+app.get('/register', function(req, res) {
+  const token = req.cookies.token;
+  const options = {
+    root: __dirname + '/../Views/'
+  }
+
+  //redirect to home page is user has a valid token
+
+  res.sendFile('Register.html', options, function(err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+});  
+
+
 app.post('/loginRequest',async function(req, res) {
   const {username, password} = req.body;
   try{
     let loginResult = await bLayer.login(username, password.toString());
     console.log(loginResult);
-    const token = jsonwebtoken.sign({ username: loginResult.username, idPlayer: loginResult.idPlayer}, secret, { expiresIn: '3h' });
+
+    //renewing token needs to be handled eventually
+    const token = jsonwebtoken.sign({ username: loginResult.username, idPlayer: loginResult.idPlayer}, secret, { expiresIn: '6h' });
     
     res.cookie('token', token, { httpOnly: true });
     res.status(200).redirect('/home');
@@ -83,6 +101,17 @@ app.post('/loginRequest',async function(req, res) {
     res.status(401).send(error.message);
   }
 });
+
+app.post('/registerRequest', async function(req, res) {
+  const {username, password} = req.body;
+  try{
+    let result = await bLayer.createPlayer(username, password.toString());
+    res.status(200).redirect('/');
+  } catch (error){
+    res.status(401).send(error.message);
+  }
+});
+
 
 app.get('/logout', (req, res) => {
   res.clearCookie('token');
