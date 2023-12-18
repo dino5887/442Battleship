@@ -16,9 +16,31 @@
             width="70vw" height="90vh" id="boardZone">
             </svg>
             <div id="controlPanel">
-
+                <div class="messageContainer">
+                    <ul id="messages"></ul>
+                    <form id="battleMessageForm" action="">
+                        <input type="hidden" id="token" value="<%= token %>">
+                        <input id="msg" autocomplete="off" />
+                        <button>Send</button>
+                    </form>
+                </div>
             </div>
         </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const form = document.getElementById("battleMessageForm");
+            const token = document.getElementById("token");
+            const msg = document.getElementById("msg");
+
+            const messages = document.getElementById("messages");
+                
+            socket.emit("join war room", {token: token.value});
+
+
+
+
+        </script>
         <script type="module" src="public/clientScripts/master.js"></script>
         <script type="module" src="public/clientScripts/createBoard.js" ></script>
     </body>

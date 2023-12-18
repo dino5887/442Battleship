@@ -7,6 +7,9 @@ var moverId = null;
 var myX = null;
 var myY = null;
 
+    
+
+
 
 export function createStartingBoard(){
     createGrid();
@@ -113,7 +116,7 @@ function createGrid(){
 
 function createShips(){
     let CV = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    CV.setAttribute("href", "assets/SVG/CV2.svg");
+    CV.setAttribute("href", "public/assets/SVG/CV2.svg");
     CV.setAttribute("x", "2vh");
     CV.setAttribute("y", "70vh");
     CV.setAttribute("width", "24.5vh");
@@ -127,7 +130,7 @@ function createShips(){
     boardZone.appendChild(CV);
 
     let BB = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    BB.setAttribute("href", "assets/SVG/BB2.svg");
+    BB.setAttribute("href", "public/assets/SVG/BB2.svg");
     BB.setAttribute("x", "40vh");
     BB.setAttribute("y", "70vh");
     BB.setAttribute("width", "19.5vh");
@@ -141,7 +144,7 @@ function createShips(){
     boardZone.appendChild(BB);
 
     let CL = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    CL.setAttribute("href", "assets/SVG/CL2.svg");
+    CL.setAttribute("href", "public/assets/SVG/CL2.svg");
     CL.setAttribute("x", "2vh");
     CL.setAttribute("y", "80vh");
     CL.setAttribute("width", "14.5vh");
@@ -155,7 +158,7 @@ function createShips(){
     boardZone.appendChild(CL);
 
     let SS = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    SS.setAttribute("href", "assets/SVG/SS2.svg");
+    SS.setAttribute("href", "public/assets/SVG/SS2.svg");
     SS.setAttribute("x", "20vh");
     SS.setAttribute("y", "80vh");
     SS.setAttribute("width", "14.5vh");
@@ -169,7 +172,7 @@ function createShips(){
     boardZone.appendChild(SS);
 
     let DD = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    DD.setAttribute("href", "assets/SVG/DD2.svg");
+    DD.setAttribute("href", "public/assets/SVG/DD2.svg");
     DD.setAttribute("x", "40vh");
     DD.setAttribute("y", "80vh");
     DD.setAttribute("width", "9.5vh");

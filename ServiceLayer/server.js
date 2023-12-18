@@ -138,21 +138,18 @@ app.post('/oldMessages', verifyToken, async function(req, res) {
 });
 
 app.get('/game', verifyToken, async function(req, res) {
-  console.log('game posted');
-  
-  const gameId = req.query.gameId;
+  const gameId = req.query.gameid;
   if(!gameId){
     res.status(400).send("Game ID is required");
   }
-
   let game = await bLayer.getGame(gameId);
-  console.log(game);
   const json = {
     gameId: gameId,
     myUsername: req.tokenUsername,
     myidPlayer: req.tokenidPlayer,
     blueId: game.idBlue,
-    redId: game.idRed
+    redId: game.idRed,
+    token: req.cookies.token
   }
 
   res.status(200).render('Game.ejs', json);
@@ -194,6 +191,20 @@ io.on('connection', async (socket) => {
 
     socket.join(gameString);
   });   
+
+    //Every game has a war room
+    socket.on('join war room', (input) => {
+      input = bParse(input);
+      let token = input['token'];
+      const decoded = jsonwebtoken.verify(token, secret);
+      if(!decoded){
+        throw new Error("Invalid Token");
+      }
+  
+      let gameString = "challenge/" + decoded.username;
+  
+      socket.join(gameString);
+    });
 
   socket.on('challenge', async (input) => {
     input = bParse(input);

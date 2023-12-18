@@ -124,3 +124,7 @@ body{
     text-align: end;
 }
 
+.battleMessageForm{
+    position:inherit;
+}
+
