@@ -9,6 +9,8 @@
     <div class="nav-wrapper">
         <a href="/home">HOME</a>
         <a href="/logout">LOGOUT</a>
+        <!-- Bad Feature, Remove when possible-->
+        <button onclick="flushgame()">Flush Game (Temp)</button>
     </div>
     <body onload="oldmessages()">
         <h1>Welcome to Battleship!</h1>
@@ -24,6 +26,19 @@
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script>
+        
+        //remove ASAP
+        function flushgame(){
+            const token = document.getElementById("token");
+            const response = fetch ("/flushgame", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            })
+        }
+
+        //abhorant coding standards but too much technical debt to fix oopsie
         const socket = io();
         
         const form = document.getElementById("messageForm");
@@ -114,6 +129,11 @@
             let time = result[2];
 
             createMessage(username, content, time);
+        });
+
+        socket.on("error", function(result) {
+            let error = result;
+            createMessage("ERROR", error, "ERROR");
         });
 
 

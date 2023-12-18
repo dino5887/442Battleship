@@ -191,7 +191,7 @@ app.get('/game', verifyToken, async function(req, res) {
   const json = {
     gameId: gameId,
     myUsername: req.tokenUsername,
-    enemyUsername: enemyUser.username,
+    enemyUsername: enemyUser.username,  
     myidPlayer: req.tokenidPlayer,
     userColor: userColor,
     enemyColor: enemyColor,
@@ -217,6 +217,13 @@ app.get('/game', verifyToken, async function(req, res) {
 // });
 
 
+//testing code kinda
+//would ideally be replaced by a full connect and disconnect system
+app.post('/flushGame', verifyToken, async function(req, res) {
+  let userId = req.tokenidPlayer;
+  let result = await bLayer.updatePlayerInGame(userId, 1);
+  res.status(200).redirect('/home');
+});
 
 io.on('connection', async (socket) => {
 
@@ -280,28 +287,14 @@ io.on('connection', async (socket) => {
     socket.leave(curGame);
   });
 
-  //Every player has a challenge room
-  socket.on('join challenge room', (input) => {
-    input = bParse(input);
-    let token = input['token'];
-    const decoded = jsonwebtoken.verify(token, secret);
-    if(!decoded){
-      throw new Error("Invalid Token");
-    }
-
-    let gameString = "challenge/" + decoded.username;
-    console.log('a user connected to ' + gameString); 
-    socket.join(gameString);
-  });   
-
-
 
   socket.on('challenge', async (input) => {
     input = bParse(input);
     let token = input['token'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      throw new Error("Invalid Token");
+      io.to("challenge/" + reciever).emit('error message', "Invalid Token");
+      //throw new Error("Invalid Token");
     }
 
     //issuer
@@ -315,19 +308,22 @@ io.on('connection', async (socket) => {
     try{
       player = await bLayer.getPlayer(tokenUsername);
     } catch(error){
-      throw new Error("Player does not exist");
+      io.to("challenge/" + reciever).emit('error message', "Player does not exist");
+      //throw new Error("Player does not exist");
     }
 
     let playerGame = null;
     if(player.inGame != 1){
-      throw new Error("This Player is already in a game!");
+      io.to("challenge/" + reciever).emit('error message', "This Player is already in a game!");
+      //throw new Error("This Player is already in a game!");
     }
 
     //is the enemy in a game?
     let enemyid = await bLayer.getPlayer(reciever);
     let enemyGame = null;
     if(enemyid.inGame != 1){
-      throw new Error("This Player is already in a game!");
+      io.to("challenge/" + reciever).emit('error message', "This Player is already in a game!");
+      //throw new Error("This Player is already in a game!");
     }
 
     //issue the challenge
@@ -345,7 +341,8 @@ io.on('connection', async (socket) => {
     let token = input['token'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      throw new Error("Invalid Token");
+      //throw new Error("Invalid Token");
+      io.to("challenge/" + decoded.username).emit('error message', "Invalid Token");
     }
     let enemyName = input['enemyName'];
     
@@ -369,7 +366,8 @@ io.on('connection', async (socket) => {
     let token = input['token'];
     const decoded = jsonwebtoken.verify(token, secret);
     if(!decoded){
-      throw new Error("Invalid Token");
+      io.to("challenge/" + decoded.username).emit('error message', "Invalid Token");
+      //throw new Error("Invalid Token");
     }
 
     //have the other player leave your challenge room
@@ -384,9 +382,7 @@ io.on('connection', async (socket) => {
     let token = input['token'];
     let msg = input['msg'];
     const decoded = jsonwebtoken.verify(token, secret);
-    if(!decoded){
-      throw new Error("Invalid Token");
-    }
+
     let tokenidPlayer = decoded.idPlayer;
     let tokenUsername = decoded.username;
     let player = await bLayer.getPlayer(tokenUsername);
@@ -398,20 +394,22 @@ io.on('connection', async (socket) => {
     } else{
       curGame = player.inGame;
     }
-
+    if(!decoded){
+      io.to(curGame).emit('error message', "Invalid Token");
+      //throw new Error("Invalid Token");
+    }
     check(msg).isLength({min: 1, max: 200}).trim().escape();
     
 
     //Create message in the database using the data
     bLayer.createMessage(tokenidPlayer, curGame, msg);
+
     let result = [tokenUsername, msg, Date.now().toString()];
     io.to(curGame).emit('chat message', result);
   });
 
 
 });
-
-
 server.listen(PORT,function(){
   console.log("Server running at port" + PORT);
 });

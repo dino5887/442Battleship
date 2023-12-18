@@ -95,7 +95,8 @@ export class BusinessLayer{
         try{
             result = await this.dataLayer.createMessage(idAuthor, time, parentChat, content);
         } catch (error){
-            throw new Error(error);
+            //throw new Error(error);
+            console.log("lmao" + " " + error);
         }
         return result;
     }
