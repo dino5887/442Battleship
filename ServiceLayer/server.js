@@ -15,6 +15,7 @@ import jsonwebtoken from 'jsonwebtoken';
 
 
 const app = express();
+
 const router = express.Router();
 const server = createServer(app);
 const io = new Server(server);
@@ -36,7 +37,7 @@ app.use(express.static(__dirname + "/public/"));
 app.use('/public/',express.static('public'));
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-
+app.use(express.json());
 
 
 //security middleware
@@ -175,8 +176,43 @@ app.get('/game', verifyToken, async function(req, res) {
   res.status(200).render('Game.ejs', json);
 });
 
+// app.post('/updateBoard', verifyToken, async function(req, res) {
+//   const {playercolor, ocean, gameState, idGame} = req.body;
+//   console.log(req.body);
+//   if(!gameState || !idGame){
+//     res.status(400).send("Game State and Game ID are required");
+//   } else{
+//   let result = await bLayer.updateGameState(idGame, gameState);
+//   res.status(200).json({gameState: gameState});
+//   }
+// });
+
+
 
 io.on('connection', async (socket) => {
+
+  socket.on('end turn', async (input) => {
+    playerColor = input['playerColor'];
+    ocean = input['ocean'];
+    gameState = input['gameState'];
+    idGame = input['idGame'];
+    token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      throw new Error("Invalid Token");
+    }
+
+    let tokenUsername = decoded.username;
+    let tokenidPlayer = decoded.idPlayer;
+
+    //update the game state
+    await bLayer.updateGameState(idGame, gameState);
+    //update the board
+    await bLayer.updateBoard(idGame, playerColor, ocean);
+
+
+    io.to(idGame).emit('end turn', {gameState: gameState, playerColor: playerColor, ocean: ocean, idGame: idGame});
+  });
 
 
   socket.on('join room', async (input) => {
@@ -198,6 +234,23 @@ io.on('connection', async (socket) => {
     socket.join(curGame);
   });
 
+  socket.on('leave room', async (input) => {
+    input = bParse(input);
+    let token = input['token'];
+    const decoded = jsonwebtoken.verify(token, secret);
+    if(!decoded){
+      throw new Error("Invalid Token");
+    }
+
+    let tokenUsername = decoded.username;
+    let tokenidPlayer = decoded.idPlayer;
+
+    let result = await bLayer.updatePlayerInGame(tokenidPlayer, 0);
+
+    console.log('a user disconnected from game ' + curGame);
+    socket.leave(curGame);
+  });
+
   //Every player has a challenge room
   socket.on('join challenge room', (input) => {
     input = bParse(input);
@@ -212,19 +265,7 @@ io.on('connection', async (socket) => {
     socket.join(gameString);
   });   
 
-    //Every game has a war room
-    socket.on('join war room', (input) => {
-      input = bParse(input);
-      let token = input['token'];
-      const decoded = jsonwebtoken.verify(token, secret);
-      if(!decoded){
-        throw new Error("Invalid Token");
-      }
-  
-      let gameString = "challenge/" + decoded.username;
-  
-      socket.join(gameString);
-    });
+
 
   socket.on('challenge', async (input) => {
     input = bParse(input);

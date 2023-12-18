@@ -18,6 +18,18 @@ export class DataLayer{
         this.query = util.promisify(this.connection.query).bind(this.connection);
     }
 
+    async updatePlayerInGame(idPlayer, idGame){
+        let sql = "UPDATE Player SET inGame = ? WHERE idPlayer = ?;";
+            const rows = await this.query(sql, [idGame, idPlayer]);
+            return rows;
+    }
+
+    async updateGameState(idGame, gameState){
+        let sql = "UPDATE Game SET gameState = ? WHERE idGame = ?;";
+            const rows = await this.query(sql, [gameState, idGame]);
+            return rows;
+    }
+
     async getGame(idGame){
         let sql = "SELECT * FROM Game WHERE idGame = ?;";
             const rows = await this.query(sql, [idGame]);

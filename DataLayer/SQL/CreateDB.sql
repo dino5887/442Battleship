@@ -58,7 +58,7 @@ CREATE TABLE `Message` (
   
   INSERT INTO Player (username, password, permissionLVL) VALUES ('RealDean','$2b$10$6CcBFq3GR090jQsHXCY2YOKbUhIlBbN5VAFLwtBdA5vydQ5PIXMg.',1);
   INSERT INTO Player (username, password, permissionLVL) VALUES ('NotBrenden','$2b$10$kGkDfHGoQYDyBA1eT7ErnOESbnBvNgMEk9mpOCGHo/h6FteUZrpIi',2);
-
+  INSERT INTO Game (idBlue, idRed, bOcean, rOcean, bTarget, rTarget, gameState) VALUES (1, 2,'{}','{}','{}','{}',0);
   INSERT INTO Chat (timestamp) VALUES (NOW());
   INSERT INTO Message(idAuthor,timestamp,parentChat,content) VALUES (1,NOW(),1,"This is dean's message or something");
  

@@ -17,6 +17,7 @@ export function createStartingBoard(){
     attachEvents();
 }
 
+
 function createGrid(){
     //this is for states 0, 1, and 2
     for ( let i = 0; i < 10; i++ ) {
@@ -76,6 +77,7 @@ function createGrid(){
             ocean.setAttribute("stroke-width", "2");
             ocean.setAttribute("stroke", "#231f20");
             ocean.setAttribute("fill", "#39b8c9");
+            ocean.setAttribute("data-ship-here",null);
             ocean.setAttribute("id", `ocean_${i}${j}`);
             boardZone.appendChild(ocean);
 
@@ -87,6 +89,7 @@ function createGrid(){
             target.setAttribute("stroke-width", "2");
             target.setAttribute("stroke", "#231f20");
             target.setAttribute("fill", `#32CD32`);
+            ocean.setAttribute("data-ship-here",null);
             target.setAttribute("id", `target_${i}${j}`);
             boardZone.appendChild(target);
         }
@@ -123,6 +126,7 @@ function createShips(){
     CV.setAttribute("height", "4.5vh");
     CV.setAttribute("id", "CV");
     CV.setAttribute("class", "ship");
+    CV.setAttribute("isRotated",false);
     CV.addEventListener("mousedown", function(evt){
         evt.preventDefault();
         setMove("CV");
@@ -137,6 +141,7 @@ function createShips(){
     BB.setAttribute("height", "4.5vh");
     BB.setAttribute("id", "BB");
     BB.setAttribute("class", "ship");
+    BB.setAttribute("isRotated",false);
     BB.addEventListener("mousedown", function(evt){
         evt.preventDefault();
         setMove("BB");
@@ -151,6 +156,7 @@ function createShips(){
     CL.setAttribute("height", "4.5vh");
     CL.setAttribute("id", "CL");
     CL.setAttribute("class", "ship");
+    CL.setAttribute("isRotated",false);
     CL.addEventListener("mousedown", function(evt){
         evt.preventDefault();
         setMove("CL");
@@ -165,6 +171,7 @@ function createShips(){
     SS.setAttribute("height", "4.5vh");
     SS.setAttribute("id", "SS");
     SS.setAttribute("class", "ship");
+    SS.setAttribute("isRotated",false);
     SS.addEventListener("mousedown", function(evt){
         evt.preventDefault();
         setMove("SS");
@@ -179,6 +186,7 @@ function createShips(){
     DD.setAttribute("height", "4.5vh");
     DD.setAttribute("id", "DD");
     DD.setAttribute("class", "ship");
+    DD.setAttribute("isRotated",false);
     DD.addEventListener("mousedown", function(evt){
         evt.preventDefault();
         setMove("DD");
@@ -197,14 +205,13 @@ function attachEvents(evt){
 //put global event listener, if statement for is mover ele 
 document.addEventListener("keydown", event =>{
     if(moverId){
-    console.log( event );
     if (event.key === "r") {
         const moverEle = document.getElementById( moverId );
-        if(isRotated(moverId)){
-            console.log("I'm rotating");
+        if(document.getElementById(moverId).getAttribute("isRotated") == "true"){
+            document.getElementById(moverId).setAttribute("isRotated",false);
             moverEle.style.transform = 'rotate(0deg)';
         } else{
-            console.log("I'm rotating");
+            document.getElementById(moverId).setAttribute("isRotated",true);
             moverEle.style.transform = 'rotate(90deg)';
         }
         //moverEle.setAttribute( `transform`, `rotate(90deg)`);
@@ -234,7 +241,6 @@ function moveMouse( evt ) {
 
 function releaseMouse() {
     if ( moverId ) {
-        let rotated = isRotated(moverId);
         let onBoard = checkOnBoard();
         let noCollide  = checkShipCollision(moverId);
         if(!onBoard){
@@ -283,7 +289,6 @@ function checkOnBoard() {
         let topLeftEdge = document.getElementById( `ocean_00` ).getBBox();
         let bottomRightEdge = document.getElementById( `ocean_99` ).getBBox();
         let ship = document.getElementById( moverId ).getBBox();
-        console.log(ship);
         //topLeft is the most top and left the ship can ever be
         //bottom right is the most bottom and right the ship can ever be
 
@@ -294,37 +299,181 @@ function checkOnBoard() {
             ship.y + ship.height > bottomRightEdge.y + bottomRightEdge.height ) {
                 return false;
             }
-        // console.log(ship);
-        // console.log(topLeftEdge );
-        return true;
-}
-
-function isRotated(id){
-    //check if the element is rotated
-    //from https://css-tricks.com/get-value-of-css-rotation-through-javascript/
-    let el = document.getElementById(id);
-
-    let st = window.getComputedStyle(el, null);
-
-    let tr = st.getPropertyValue("-webkit-transform") ||
-            st.getPropertyValue("-moz-transform") ||
-            st.getPropertyValue("-ms-transform") ||
-            st.getPropertyValue("-o-transform") ||
-            st.getPropertyValue("transform");
-    if(tr != 'none'){
-        return true;
-    } else{
-        return false;
-    }
-}
-
-function logShips(){
-
-    for(ship in shipArray){
         
-        length = shipCodeLength[ship];
+        for(let i = 0; i <= 9; i++){
+            for(let j = 0; j <= 9; j++){
+                let tile = document.getElementById(`ocean_${i}${j}`).getBBox();
+                //check which tile ship origin is in
+                if(ship.x - tile.x < tile.width &&
+                    //Ship is to the left of the tile by less than a width
+                    ship.x - tile.x > 0 &&
+                    //tile is not further left of the ship
+                    ship.y - tile.y < tile.height &&
+                    //ship is above the tile by less than a height
+                    ship.y - tile.y > 0
+                    //tile is not further above the ship
+                    ){
+                    
+                    //ship is in this tile
+                    let shipTile = document.getElementById(`ocean_${i}${j}`);
+                    shipTile.setAttribute("data-ship-here", moverId);
+                    
+                }
+            }
+        }
 
+
+        return true;
+}
+
+
+
+export function logShips(){
+    
+    //emergency code
+    const json = {
+            0: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            1: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            2: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            3: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            4: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            5: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            6: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            7: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            8: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            },
+            9: {
+                0: "NSS.X",
+                1: "NSS.X",
+                2: "NSS.X",
+                3: "NSS.X",
+                4: "NSS.X",
+                5: "NSS.X",
+                6: "NSS.X",
+                7: "NSS.X",
+                8: "NSS.X",
+                9: "NSS.X"
+            }
     }
+
+    for(let i = 0; i <= 9; i++){
+        for(let j = 0; j <= 9; j++){
+            let tile = document.getElementById(`ocean_${i}${j}`);
+            if(tile.dataset.shipHere != "null"){
+                let ship = document.getElementById(tile.dataset.shipHere);
+                if(ship.getAttribute("isRotated") == "true"){
+                    for(let k = 0; k < shipCodeLength[tile.dataset.shipHere]; k++){
+                        json[i][j+k] = (tile.dataset.shipHere+[k+1]+".X");
+                    }
+                } else{
+                    for(let k = 0; k < shipCodeLength[tile.dataset.shipHere]; k++){
+                        json[i+k][j] = (tile.dataset.shipHere+[k+1]+".X");
+                    } 
+                }
+            }
+        }
+    }
+    
+    console.log(json);
+    return json;
 }
 
 export{createGrid}

@@ -8,6 +8,7 @@
     </head>
     <div class="nav-wrapper">
         <a href="/home">HOME</a>
+        <a href="/logout">LOGOUT</a>
     </div>
     <body  onload="">
         <div class="board">
@@ -20,15 +21,14 @@
                     <ul id="messages"></ul>
                     <form id="battleMessageForm" action="">
                         <input type="hidden" id="token" value="<%=token%>">
-                        <input type="hidden" id="gameId" value="<%=gameId%>">
                         <input id="msg" autocomplete="off" />
                         <button>Send</button>
                     </form>
-                    <h2 id="gameState" data-game-state="<%=gameState%>"></h2>
+                    <h2 id="gameState" data-game-id="<%=gameId%>" data-game-state="<%=gameState%>"></h2>
                     <h2 id="playerTurn">Current Turn: <%=currentTurn%></h2>
-                    <h2 id="userColor"><%=userColor%> : <%=myUsername%></h2>
+                    <h2 id="userColor" data-myid-player="<%=myidPlayer%>"><%=userColor%> : <%=myUsername%></h2>
                     <h2 id="enemyColor"><%=enemyColor%> : <%=enemyUsername%></h2>
-                    <button id="endTurnButton" onclick="endTurn()">End Turn</button>
+                    <button id="endTurnButton">End Turn</button>
                     <div id="errorPanel">
                     <h2 id="errorText">Errors: </h2>
                     </div>
@@ -38,37 +38,6 @@
             </div>
         </div>
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            const socket = io();
-            const form = document.getElementById("battleMessageForm");
-            const token = document.getElementById("token");
-            const gameId = document.getElementById("gameId");
-            const msg = document.getElementById("msg");
-            const messages = document.getElementById("messages");
-                
-            //gamestate function
-            const gameState = document.getElementById("gameState");
-            const gameStateNum = document.getElementById("gameState").dataset.gameState;
-            console.log(gameStateNum, "gameStateNum", gameState, "gameState");
-            switch(gameStateNum){
-                case 0:
-                    document.createTextNode("Waiting for Both Players to Place Ships");
-                case 1:
-                    document.createTextNode("Waiting for player 1 to place ships");
-                case 2:
-                    document.createTextNode("Waiting for player 2 to place ships");
-                case 3:
-                    document.createTextNode("Battle State");
-                case 4:
-                    document.createTextNode("Game Over");
-            }
-
-            socket.emit("join war room", {token: token.value});
-
-
-
-
-        </script>
         <script type="module" src="public/clientScripts/master.js"></script>
         <script type="module" src="public/clientScripts/createBoard.js" ></script>
     </body>

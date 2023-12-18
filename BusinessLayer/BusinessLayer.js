@@ -21,6 +21,16 @@ export class BusinessLayer{
         return result;
     }
 
+    async updateGameState(idGame, gameState){
+        let result = null;
+        try{
+            result = await this.dataLayer.updateGameState(idGame, gameState);
+        } catch (error){
+            throw new Error(error);
+        }
+        return result;
+    }
+
     async getGame(idGame){
         let result = null;
         try{
